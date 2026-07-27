@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#5b8c6e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Y's" />
+  <meta name="description" content="洋的工作台 - 每日计划与成长" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <title>Y's 洋的工作台</title>
+  <style>
+    :root {
+      --primary: #3f7a5a;
+      --primary-dark: #2e5d44;
+      --text: #2c3a32;
+      --text-light: #5f7268;
+      --glass: rgba(255, 255, 255, 0.55);
+      --glass-strong: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.65);
+      --shadow: 0 8px 32px rgba(31, 60, 45, 0.12);
+      --tag-bg: rgba(63, 122, 90, 0.14);
+      --tag-text: #3f7a5a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      min-height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e3f3ec 0%, #eaf4fb 45%, #f1ebfb 100%);
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 16px;
+      overflow-x: hidden;
+    }
+    /* 背景模糊光斑 */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(70px);
+      z-index: -1;
+      opacity: 0.55;
+    }
+    body::before { width: 320px; height: 320px; background: #a8e6cf; top: -80px; left: -90px; }
+    body::after  { width: 280px; height: 280px; background: #c9b8ff; bottom: -60px; right: -70px; }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* glass 基类 */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+    }
+
+    .date-bar {
+      margin-bottom: 14px;
+      padding: 0 8px;
+      font-size: 14px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    /* Header */
+    .header-card {
+      border-radius: 24px;
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-icon {
+      width: 50px; height: 50px;
+      background: var(--tag-bg);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .header-title {
+      font-size: 24px; font-weight: 700; color: var(--primary-dark);
+      letter-spacing: 0.5px;
+    }
+    .header-sub {
+      font-size: 13px; color: var(--text-light); margin-top: 2px;
+    }
+
+    /* 卡片式菜单 */
+    .menu-card { background: transparent; box-shadow: none; }
+    .menu-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .menu-item {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 18px rgba(31,60,45,0.08);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+    }
+    .menu-item:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(31,60,45,0.1); }
+
+    .menu-icon {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+      background: var(--tag-bg);
+      border-radius: 12px;
+    }
+    .menu-text { font-size: 17px; font-weight: 600; color: var(--text); flex: 1; }
+    .menu-arrow { color: #b6c5bc; font-size: 18px; }
+
+    /* install hint */
+    .install-hint {
+      margin-top: 16px; padding: 14px 18px;
+      border-radius: 18px; display: none; align-items: flex-start; gap: 12px;
+      font-size: 14px; color: var(--text-light); line-height: 1.5;
+    }
+    .install-hint.show { display: flex; }
+    .install-hint-icon { font-size: 20px; flex-shrink: 0; }
+    .install-btn {
+      margin-top: 10px; padding: 8px 16px;
+      background: var(--primary); color: #fff; border: none;
+      border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Detail sheet */
+    .sheet-overlay {
+      position: fixed; inset: 0;
+      background: rgba(20, 40, 30, 0.4);
+      backdrop-filter: blur(2px);
+      display: none; align-items: flex-end; justify-content: center; z-index: 100;
+    }
+    .sheet-overlay.show { display: flex; }
+    .sheet {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-top: 1px solid rgba(255,255,255,0.8);
+      width: 100%; max-width: 420px; max-height: 86vh;
+      border-radius: 28px 28px 0 0;
+      padding: 18px 20px 30px;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1);
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .sheet-overlay.show .sheet { transform: translateY(0); }
+    .sheet-handle { width: 40px; height: 4px; background: rgba(0,0,0,0.12); border-radius: 2px; margin: 0 auto 16px; }
+    .sheet-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--primary-dark); }
+    .sheet-close {
+      margin-top: 22px; width: 100%; padding: 14px;
+      background: var(--primary); color: #fff; border: none;
+      border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer;
+    }
+
+    /* shared content */
+    .block { margin-bottom: 18px; }
+    .block-label { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 9px; display: flex; align-items: center; gap: 6px; }
+    .desc-text { font-size: 15px; color: var(--text-light); line-height: 1.75; }
+
+    .tip-box {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 14px; padding: 14px 16px;
+      font-size: 14px; color: var(--text); line-height: 1.7;
+    }
+
+    .link-grid { display: grid; gap: 11px; }
+    .link-grid.c3 { grid-template-columns: 1fr 1fr 1fr; }
+    .link-grid.c2 { grid-template-columns: 1fr 1fr; }
+    .link-card {
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      padding: 16px 8px; border-radius: 16px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.7);
+      text-decoration: none; color: var(--text);
+      transition: transform 0.12s ease;
+    }
+    .link-card:active { transform: scale(0.96); }
+    .link-card .lc-icon { font-size: 26px; }
+    .link-card .lc-name { font-size: 13px; font-weight: 600; }
+
+    /* book */
+    .book-card {
+      border-radius: 18px; padding: 18px;
+      background: linear-gradient(135deg, rgba(255,248,231,0.8) 0%, rgba(255,255,255,0.6) 100%);
+      border: 1px solid rgba(240,230,207,0.7);
+    }
+    .book-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .book-author { font-size: 13px; color: var(--tag-text); margin-bottom: 10px; font-weight: 600; }
+    .book-desc { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+    .quote-box {
+      margin-top: 14px; padding: 14px 16px;
+      background: var(--tag-bg); border-left: 4px solid var(--primary);
+      border-radius: 10px; font-size: 15px; line-height: 1.7; color: var(--text);
+    }
+    .quote-box .qmark { color: var(--primary); font-weight: 700; }
+
+    /* english / exercise tabs */
+    .tabs {
+      display: flex; gap: 8px; margin-bottom: 16px;
+      background: rgba(255,255,255,0.5); padding: 5px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .tab {
+      flex: 1; padding: 10px 4px; text-align: center; font-size: 14px; font-weight: 600;
+      color: var(--text-light); border-radius: 10px; cursor: pointer; border: none; background: transparent;
+    }
+    .tab.active { background: #fff; color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .scene-card, .plan-card {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 16px; padding: 16px;
+    }
+    .scene-name { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--primary-dark); }
+    .scene-line { font-size: 15px; line-height: 1.8; margin-bottom: 7px; }
+    .scene-en { color: var(--text); font-weight: 500; }
+    .scene-cn { color: var(--text-light); font-size: 13px; }
+
+    .word-list { display: flex; flex-direction: column; gap: 10px; }
+    .word-item { background: rgba(255,255,255,0.5); border-radius: 12px; padding: 12px 14px; border: 1px solid rgba(255,255,255,0.6); }
+    .word-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .word-en { font-size: 16px; font-weight: 700; color: var(--primary-dark); }
+    .word-ph { font-size: 13px; color: #9aa; }
+    .word-cn { font-size: 14px; color: var(--text); margin-bottom: 4px; }
+    .word-use { font-size: 13px; color: var(--text-light); line-height: 1.6; font-style: italic; }
+
+    /* calligraphy */
+    .copybook { display: flex; gap: 14px; align-items: center; padding: 14px; background: rgba(255,255,255,0.55); border-radius: 16px; border: 1px solid rgba(255,255,255,0.7); margin-bottom: 12px; }
+    .copybook-char {
+      width: 64px; height: 64px; flex-shrink: 0; background: #fff;
+      border: 2px dashed var(--primary); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px; color: var(--primary-dark); font-family: "KaiTi","STKaiti",serif;
+    }
+    .copybook-info .cb-name { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+    .copybook-info .cb-desc { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+
+    .tag { display: inline-block; font-size: 12px; padding: 4px 11px; background: var(--tag-bg); color: var(--tag-text); border-radius: 20px; font-weight: 600; }
+
+    /* exercise action list */
+    .action-item {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 13px; padding: 12px 14px; margin-bottom: 9px;
+    }
+    .action-emoji { font-size: 22px; width: 30px; text-align: center; }
+    .action-name { font-size: 15px; font-weight: 600; }
+    .action-meta { font-size: 12px; color: var(--text-light); margin-top: 1px; }
+
+    .video-link {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--primary); color: #fff; text-decoration: none;
+      border-radius: 14px; padding: 13px 16px; margin-top: 4px;
+      font-size: 14px; font-weight: 600;
+    }
+    .video-link .vl-icon { font-size: 18px; }
+
+    .meditate-card { text-align: center; padding: 24px 16px; }
+    .meditate-emoji { font-size: 44px; margin-bottom: 10px; }
+    .meditate-name { font-size: 17px; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; }
+    .meditate-desc { font-size: 14px; color: var(--text-light); line-height: 1.8; }
+
+    /* header gear + sync status */
+    .header-card { justify-content: flex-start; }
+    .header-meta { flex: 1; }
+    .gear-btn {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: var(--tag-bg); border: none; border-radius: 14px;
+      font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .gear-btn:active { transform: scale(0.95); }
+    .sync-status {
+      margin: -6px 0 12px; padding: 0 10px;
+      font-size: 12px; color: var(--text-light); display: flex; align-items: center; gap: 6px;
+    }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #c4cfc8; flex-shrink: 0; }
+    .sync-dot.ok { background: #3f7a5a; }
+    .sync-dot.err { background: #d97706; }
+
+    /* editable area */
+    .edit-area {
+      width: 100%; min-height: 96px; resize: vertical;
+      border: 1px solid var(--glass-border); border-radius: 14px;
+      background: rgba(255,255,255,0.6); padding: 12px 14px;
+      font-size: 15px; line-height: 1.7; color: var(--text);
+      font-family: inherit; outline: none;
+    }
+    .edit-area:focus { border-color: var(--primary); background: rgba(255,255,255,0.8); }
+    .edit-hint { font-size: 12px; color: var(--text-light); margin-top: 7px; }
+
+    /* settings form */
+    .form-row { margin-bottom: 14px; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 7px; display: block; }
+    .form-input, .form-select {
+      width: 100%; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--glass-border); background: rgba(255,255,255,0.6);
+      font-size: 15px; color: var(--text); font-family: inherit; outline: none;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--primary); }
+    .save-btn {
+      width: 100%; padding: 14px; border: none; border-radius: 14px;
+      background: var(--primary); color: #fff; font-size: 16px; font-weight: 600; cursor: pointer;
+    }
+    .save-btn:active { transform: scale(0.99); }
+    .ghost-btn {
+      width: 100%; padding: 12px; margin-top: 10px; border: 1px solid var(--glass-border);
+      border-radius: 12px; background: rgba(255,255,255,0.5); color: var(--primary-dark);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .sync-tip { font-size: 12px; color: var(--text-light); line-height: 1.7; margin-top: 14px; }
+    .sync-tip b { color: var(--primary-dark); }
+
+    /* provider switch pills */
+    .prov-pills { display: flex; gap: 8px; margin-bottom: 6px; }
+    .prov-pill {
+      flex: 1; padding: 12px 8px; text-align: center; border-radius: 14px; cursor: pointer;
+      background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border);
+      font-size: 14px; font-weight: 600; color: var(--text-light);
+    }
+    .prov-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .prov-pill .pp-sub { font-size: 11px; font-weight: 500; opacity: 0.85; margin-top: 2px; }
+
+    /* guided steps */
+    .steps { display: flex; flex-direction: column; gap: 10px; margin: 4px 0 16px; }
+    .step {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 14px; padding: 13px 14px;
+    }
+    .step-num {
+      width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%;
+      background: var(--primary); color: #fff; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-body { flex: 1; font-size: 13.5px; color: var(--text); line-height: 1.6; }
+    .step-body b { color: var(--primary-dark); }
+    .step-link {
+      display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+      padding: 7px 12px; border-radius: 10px; text-decoration: none;
+      background: var(--tag-bg); color: var(--tag-text); font-size: 13px; font-weight: 600;
+    }
+    .step-link:active { transform: scale(0.97); }
+    .test-result { font-size: 13px; margin-top: 10px; line-height: 1.6; min-height: 18px; }
+    .test-result.ok { color: var(--primary-dark); }
+    .test-result.err { color: #d97706; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="date-bar" id="dateBar"></div>
+
+    <div class="sync-status">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncStatus">同步状态：未连接</span>
+    </div>
+
+    <div class="header-card glass">
+      <div class="header-icon">🗂️</div>
+      <div class="header-meta">
+        <div class="header-title">洋的工作台</div>
+        <div class="header-sub">每天，把生活过成想要的样子</div>
+      </div>
+      <button class="gear-btn" id="gearBtn" title="同步设置">⚙️</button>
+    </div>
+
+    <div class="menu-card">
+      <ul class="menu-list">
+        <li class="menu-item" data-module="plan">
+          <div class="menu-icon">📋</div><div class="menu-text">每日计划</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="hot">
+          <div class="menu-icon">🔥</div><div class="menu-text">爆款热点内容及视频/二创</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="inspire">
+          <div class="menu-icon">✨</div><div class="menu-text">灵感收集</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="memo">
+          <div class="menu-icon">📝</div><div class="menu-text">备忘录</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="data">
+          <div class="menu-icon">📡</div><div class="menu-text">实时大数据</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="share">
+          <div class="menu-icon">🏮</div><div class="menu-text">每日分享</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="book">
+          <div class="menu-icon">📚</div><div class="menu-text">读书计划</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="english">
+          <div class="menu-icon">🌍</div><div class="menu-text">英语学习</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="calligraphy">
+          <div class="menu-icon">🖌️</div><div class="menu-text">书法练习</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="poetry">
+          <div class="menu-icon">🎐</div><div class="menu-text">诗词赏析</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="exercise">
+          <div class="menu-icon">💪</div><div class="menu-text">锻炼身体</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="ai">
+          <div class="menu-icon">🤖</div><div class="menu-text">AI技巧库</div><div class="menu-arrow">›</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="install-hint glass" id="installHint">
+      <div class="install-hint-icon">📲</div>
+      <div>
+        <div>可以把这个工作台添加到手机桌面，像 App 一样打开。</div>
+        <button class="install-btn" id="installBtn">添加到桌面</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="sheetOverlay">
+    <div class="sheet" id="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="sheetTitle"></div>
+      <div id="sheetBody"></div>
+      <button class="sheet-close" id="sheetClose">收起</button>
+    </div>
+  </div>
+
+  <script>
+    function dayIndex() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      return Math.floor((now - start) / 86400000);
+    }
+    const pick = (arr) => arr[dayIndex() % arr.length];
+
+    document.getElementById('dateBar').textContent = new Date().toLocaleDateString('zh-CN', {
+      year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+    });
+
+    const DATA = {
+      books: [
+        { title: '《原子习惯》', author: '詹姆斯·克利尔', desc: '微小改变带来巨大成就。用「1%法则」建立好习惯、戒掉坏习惯，系统比目标更重要。', quote: '每天进步1%，一年后你将进步37倍。' },
+        { title: '《深度工作》', author: '卡尔·纽波特', desc: '在分心时代，专注是稀缺竞争力。教你如何进入心流、屏蔽干扰，产出高价值成果。', quote: '专注，是新时代最稀缺的能力。' },
+        { title: '《活法》', author: '稻盛和夫', desc: '日本经营之圣的人生哲学：作为人，何谓正确。用利他之心和极致努力过好每一天。', quote: '付出不亚于任何人的努力。' },
+        { title: '《认知觉醒》', author: '周岭', desc: '成长的本质是认知升级。从元认知、专注力到行动力，帮你打通「知道」到「做到」。', quote: '成长的本质，是认知的升级。' },
+        { title: '《被讨厌的勇气》', author: '岸见一郎', desc: '阿德勒心理学入门：课题分离、目的论，获得真正自由的人际关系与人生。', quote: '一切烦恼，都来自人际关系。' },
+        { title: '《心流》', author: '米哈里·契克森米哈赖', desc: '最优体验心理学。当你全神贯注于有挑战的任务，时间感消失，幸福自然降临。', quote: '专注当下，就是幸福本身。' },
+        { title: '《非暴力沟通》', author: '马歇尔·卢森堡', desc: '观察、感受、需要、请求——四步法让沟通不再伤人，让关系更柔软有力。', quote: '不带评论的观察，是人类智力的最高形式。' }
+      ],
+      scenes: [
+        { name: '在咖啡店点单', lines: [ {en:"I'd like a latte to go, please.",cn:'我想要一杯拿铁，外带。'},{en:'Could I get it with oat milk?',cn:'可以换成燕麦奶吗？'},{en:'How much is it altogether?',cn:'一共多少钱？'} ]},
+        { name: '机场问路', lines: [ {en:'Excuse me, where is the boarding gate?',cn:'打扰一下，登机口在哪里？'},{en:'Is my flight on time?',cn:'我的航班准点吗？'},{en:'How long does it take to get there?',cn:'到那里要多久？'} ]},
+        { name: '餐厅点餐', lines: [ {en:'Could I see the menu, please?',cn:'请给我看一下菜单好吗？'},{en:"I'll have the grilled chicken.",cn:'我要一份烤鸡。'},{en:'No spicy, please. Thank you.',cn:'请不要加辣，谢谢。'} ]},
+        { name: '酒店入住', lines: [ {en:'I have a reservation under Yang.',cn:'我用 Yang 的名字预订了房间。'},{en:'What time is check-out?',cn:'几点退房？'},{en:'Is breakfast included?',cn:'含早餐吗？'} ]},
+        { name: '购物退换', lines: [ {en:"I'd like to return this item.",cn:'我想退这件商品。'},{en:'Do you have it in a larger size?',cn:'有大一码的吗？'},{en:'Can I get a refund, please?',cn:'可以退款吗？'} ]},
+        { name: '日常寒暄', lines: [ {en:"How's everything going lately?",cn:'最近怎么样？'},{en:'Long time no see! You look great.',cn:'好久不见！你看起来很棒。'},{en:"Let's catch up over coffee soon.",cn:'找个时间喝咖啡叙叙旧吧。'} ]},
+        { name: '工作面试自我介绍', lines: [ {en:"I'm a content creator with 3 years' experience.",cn:'我是一名有3年经验的内容创作者。'},{en:'I am good at short-video planning and editing.',cn:'我擅长短视频策划与剪辑。'},{en:'I am a fast learner and a team player.',cn:'我学习快，有团队精神。'} ]}
+      ],
+      nce: [
+        { lesson: '新概念2 · Lesson 1', point: '一般现在时 vs 现在进行时', tip: '表示习惯动作用一般现在时；此时此刻正在发生的用进行时。例：I write every day. / I am writing now.' },
+        { lesson: '新概念2 · Lesson 3', point: '一般过去时', tip: '过去发生的动作，动词加 -ed（不规则需记）。常配 yesterday, last week 等时间状语。' },
+        { lesson: '新概念2 · Lesson 5', point: '现在完成时', tip: 'have/has + 过去分词。强调过去动作对现在的影响或经历。配 already, yet, ever, never。' },
+        { lesson: '新概念2 · Lesson 9', point: '将来时 will / be going to', tip: 'will 表临时决定或预测；be going to 表已计划或基于迹象的预测。' },
+        { lesson: '新概念2 · Lesson 13', point: '过去进行时', tip: 'was/were + doing。描述过去某时刻正在进行的动作，常与 when/while 连用。' },
+        { lesson: '新概念2 · Lesson 17', point: '现在完成进行时', tip: 'have/has been + doing。强调动作从过去持续到现在，可能还在继续。' },
+        { lesson: '新概念2 · Lesson 21', point: '被动语态', tip: 'be + 过去分词。当不知道或不必说出动作执行者时使用。' }
+      ],
+      vocabGroups: [
+        [
+          { w:'insight',ph:'/ˈɪnsaɪt/',cn:'洞察力；深刻见解',use:'Her post gave me a fresh insight into the topic. 她的推文让我对这个话题有了新洞察。'},
+          { w:'viral',ph:'/ˈvaɪrəl/',cn:'病毒式传播的',use:'The video went viral overnight. 这条视频一夜爆火。'},
+          { w:'engage',ph:'/ɪnˈɡeɪdʒ/',cn:'吸引；互动',use:'Ask questions to engage your audience. 多提问来和观众互动。'},
+          { w:'niche',ph:'/niːʃ/',cn:'小众领域；细分市场',use:'He found his niche in calligraphy videos. 他在书法视频里找到了自己的赛道。'},
+          { w:'authentic',ph:'/ɔːˈθentɪk/',cn:'真实的；真诚的',use:'Audiences love authentic content. 观众喜欢真实的内容。'},
+          { w:'hook',ph:'/hʊk/',cn:'钩子；开头吸引点',use:'A strong hook keeps viewers watching. 强有力的开头能留住观众。'},
+          { w:'iterate',ph:'/ˈɪtəreɪt/',cn:'迭代；反复改进',use:'Iterate your script before filming. 拍摄前反复打磨脚本。'},
+          { w:'momentum',ph:'/məˈmentəm/',cn:'势头；动力',use:'Keep posting to maintain momentum. 持续更新保持势头。'},
+          { w:'thumbnail',ph:'/ˈθʌmneɪl/',cn:'缩略图；封面',use:'A catchy thumbnail boosts click rate. 吸引人的封面能提升点击率。'},
+          { w:'resonate',ph:'/ˈrezəneɪt/',cn:'引起共鸣',use:'The story resonated with millions. 这个故事引发了千万人共鸣。'}
+        ],
+        [
+          { w:'consistent',ph:'/kənˈsɪstənt/',cn:'持续的；一致的',use:'Consistent effort beats talent. 持续的努力胜过天赋。'},
+          { w:'feedback',ph:'/ˈfiːdbæk/',cn:'反馈',use:'Read comments for honest feedback. 看评论获取真实反馈。'},
+          { w:'brainstorm',ph:'/ˈbreɪnstɔːm/',cn:'头脑风暴',use:"Let's brainstorm some new ideas. 我们来头脑风暴些新点子。"},
+          { w:'deadline',ph:'/ˈdedlaɪn/',cn:'截止日期',use:'I have to meet the deadline today. 我今天得赶上截止时间。'},
+          { w:'perspective',ph:'/pəˈspektɪv/',cn:'视角；观点',use:'Try a fresh perspective on old topics. 用新视角看老话题。'},
+          { w:'curate',ph:'/kjʊəˈreɪt/',cn:'策划；精选',use:'Curate your best clips into a reel. 把最好的片段精选成一条。'},
+          { w:'trend',ph:'/trend/',cn:'趋势；潮流',use:'Jump on the trend early. 早点跟上这波潮流。'},
+          { w:'concise',ph:'/kənˈsaɪs/',cn:'简洁的',use:'Keep your script concise and punchy. 脚本要简洁有力。'},
+          { w:'aesthetic',ph:'/iːsˈθetɪk/',cn:'美感；审美',use:'A clean aesthetic attracts followers. 干净的审美能吸粉。'},
+          { w:'dedicate',ph:'/ˈdedɪkeɪt/',cn:'致力于；投入',use:'Dedicate 30 minutes to calligraphy daily. 每天投入30分钟练字。'}
+        ],
+        [
+          { w:'fluency',ph:'/ˈfluːənsi/',cn:'流利度',use:'Practice daily to build fluency. 每天练习提升流利度。'},
+          { w:'pronunciation',ph:'/prəˌnʌnsiˈeɪʃn/',cn:'发音',use:'Mimic native pronunciation. 模仿母语者发音。'},
+          { w:'vocabulary',ph:'/vəˈkæbjələri/',cn:'词汇量',use:'Expand your vocabulary by reading. 通过阅读扩大词汇量。'},
+          { w:'comprehension',ph:'/ˌkɒmprɪˈhenʃn/',cn:'理解力',use:'Listening improves comprehension. 多听能提升理解力。'},
+          { w:'memorize',ph:'/ˈmeməraɪz/',cn:'记忆；背诵',use:'Memorize 10 words a day. 每天背10个单词。'},
+          { w:'context',ph:'/ˈkɒntekst/',cn:'语境；上下文',use:'Learn words in context. 在语境中学单词。'},
+          { w:'fluent',ph:'/ˈfluːənt/',cn:'流利的',use:'She is fluent in three languages. 她能流利使用三种语言。'},
+          { w:'accent',ph:'/ˈæksent/',cn:'口音',use:"Don't worry about your accent. 别在意口音。"},
+          { w:'dialogue',ph:'/ˈdaɪəlɒɡ/',cn:'对话',use:'Practice dialogues with a partner. 和伙伴练习对话。'},
+          { w:'immerse',ph:'/ɪˈmɜːs/',cn:'沉浸',use:'Immerse yourself in English daily. 每天让自己沉浸在英语中。'}
+        ]
+      ],
+      copybooks: [
+        { name: '颜真卿《多宝塔碑》', desc: '楷书入门首选，结构端庄、笔法清晰，最适合零基础打基础。', char: '永' },
+        { name: '欧阳询《九成宫醴泉铭》', desc: '法度严谨、字形险峻，适合练结构比例与笔力。', char: '九' },
+        { name: '柳公权《玄秘塔碑》', desc: '骨力挺拔、瘦硬清劲，练腕力与提按的好范本。', char: '玄' },
+        { name: '赵孟頫《胆巴碑》', desc: '圆润秀美、行楷结合，过渡到行书的桥梁。', char: '福' },
+        { name: '硬笔·田英章楷书', desc: '日常硬笔入门，结构规范，适合现代书写。', char: '正' },
+        { name: '《曹全碑》隶书', desc: '秀美多姿的隶书入门，蚕头燕尾，练笔意。', char: '和' }
+      ],
+      dailyChars: ['永','和','九','玄','福','正','書','道','心','静','山','水','春','風','月','雲'],
+      aiLinks: [
+        { name: '通往AGI之路', icon: '🧭', url: 'https://waytoagi.com' },
+        { name: '机器之心', icon: '📰', url: 'https://www.jiqizhixin.com' },
+        { name: 'OpenAI 官方', icon: '🟢', url: 'https://platform.openai.com/docs' },
+        { name: 'Hugging Face', icon: '🤗', url: 'https://huggingface.co/learn' },
+        { name: 'Papers with Code', icon: '📄', url: 'https://paperswithcode.com' },
+        { name: '吴恩达 AI 课', icon: '🎓', url: 'https://www.deeplearning.ai/courses' }
+      ],
+      aiTips: [
+        '写提示词三要素：角色 + 任务 + 约束。例：「你是文案编辑，请把这段话改得更口语化，控制在50字内。」',
+        '用「思维链」让 AI 分步推理：在提示词末尾加「请一步步思考」，复杂问题准确率明显提升。',
+        '给 AI 举例子（few-shot）：先给2-3个输入输出范例，它就能模仿你的风格和格式。',
+        '让 AI 自我检查：生成后追加「请检查上文是否有事实错误并修正」，能减少幻觉。'
+      ],
+      // ===== 锻炼身体 =====
+      stretchGroups: [
+        [
+          { e:'🔄', n:'颈部绕环', m:'顺/逆时针各8次' },
+          { e:'💪', n:'肩部开合拉伸', m:'双臂展开后交叉，10次' },
+          { e:'🐱', n:'猫牛式', m:'四足，拱背塌腰，8个呼吸' },
+          { e:'🧘', n:'下犬式', m:'臀部上提，停留5个呼吸' },
+          { e:'🪑', n:'坐姿体前屈', m:'双腿伸直，手够脚尖，30秒' }
+        ],
+        [
+          { e:'🫁', n:'扩胸拉伸', m:'双手背后交扣，挺胸，20秒' },
+          { e:'🌀', n:'侧腰拉伸', m:'单臂上举向对侧弯，每侧20秒' },
+          { e:'🦵', n:'大腿前侧拉伸', m:'站立握脚踝贴臀，每侧20秒' },
+          { e:'🦶', n:'小腿拉伸', m:'弓步压后脚跟，每侧20秒' },
+          { e:'👶', n:'婴儿式放松', m:'跪坐前趴，3个深呼吸' }
+        ],
+        [
+          { e:'🔄', n:'转颈转腰', m:'缓慢转动，各方向5次' },
+          { e:'⬇️', n:'站立体前屈', m:'放松脊柱，30秒' },
+          { e:'🦵', n:'弓步压腿', m:'前后腿交替，每侧20秒' },
+          { e:'🤲', n:'手腕脚踝绕环', m:'各方向10圈' },
+          { e:'🦋', n:'蝴蝶式', m:'脚心相对压膝，30秒' }
+        ]
+      ],
+      meditationGroups: [
+        { e:'🌬️', n:'呼吸锚定冥想', d:'闭眼，把注意力放在鼻端的呼吸上。走神了不用责怪自己，轻轻把注意力拉回呼吸。时长：5 分钟。' },
+        { e:'🧎', n:'身体扫描', d:'从头顶到脚趾，依次把注意力放在每个部位，感受它的重量与放松，不评判、只是觉察。时长：8 分钟。' },
+        { e:'💛', n:'感恩冥想', d:'回想今天 3 件值得感谢的小事，在心里停留片刻，感受那份温暖与满足。时长：5 分钟。' },
+        { e:'👂', n:'正念聆听', d:'放下手机，单纯地倾听环境中的声音——风声、远处的车流、自己的呼吸，不做判断。时长：5 分钟。' }
+      ],
+      workoutGroups: [
+        { e:'🔥', n:'居家 HIIT 燃脂', d:'开合跳 30s · 深蹲 30s · 高抬腿 30s · 平板支撑 30s，循环 3 组，组间休息 20s。' },
+        { e:'🌅', n:'晨间唤醒', d:'靠墙静蹲 30s · 提踵 20 次 · 扩胸 15 次 · 原地慢走 2 分钟，轻柔唤醒身体。' },
+        { e:'💎', n:'核心训练', d:'卷腹 15 · 平板支撑 40s · 左右侧撑各 20s · 臀桥 15，循环 3 组。' },
+        { e:'🏃', n:'有氧燃脂操', d:'跟跳一段健身操视频，持续 15–20 分钟，保持微微出汗、能说话的强度。' }
+      ],
+      // ===== 每日分享 =====
+      heritage: [
+        { n:'昆曲', d:'“百戏之祖”，2001年入选联合国首批人类非遗。曲词典雅、载歌载舞，《牡丹亭》是其巅峰之作，一唱三叹六百年。' },
+        { n:'二十四节气', d:'古人观察太阳周年运动总结的时间体系，被誉为“中国第五大发明”。指导农事，也塑造了顺时而食、顺时而居的生活哲学。' },
+        { n:'苏绣', d:'四大名绣之首，以“平、齐、细、密、匀、顺、和、光”八字著称。双面绣一根丝线劈成六十四分之一，绣猫可见根根毛发。' },
+        { n:'活字印刷术', d:'北宋毕昇发明胶泥活字，比古腾堡早四百年。一字一模、排版印刷，改变了知识传播的速度，至今浙江瑞安仍保留木活字印刷。' },
+        { n:'古琴艺术', d:'三千年历史的“士之乐”，位列“琴棋书画”之首。七弦十三徽，讲究“清微淡远”，《流水》曾随旅行者号飞向太空。' },
+        { n:'龙泉青瓷', d:'“青如玉、明如镜、声如磬”，宋代五大名窑之外的传奇。粉青、梅子青釉色如千峰翠色，是唯一入选人类非遗的陶瓷类项目。' },
+        { n:'皮影戏', d:'“一口叙说千古事，双手对舞百万兵”。兽皮镂刻、灯影成像，一块白布就是舞台，堪称最早的“电影”。' }
+      ],
+      culture: [
+        { n:'君子六艺', d:'礼、乐、射、御、书、数——周代贵族教育的六门必修课。既修内在德行，也练外在技能，是古人“全面发展”的教育观。' },
+        { n:'茶文化 · 点茶', d:'宋人喝茶不泡而“点”：茶饼碾末、沸水冲点、茶筅击拂出雪沫乳花。斗茶比的是汤色与水痕，日本抹茶道即源于此。' },
+        { n:'天干地支', d:'十天干配十二地支，六十年一循环，称“一甲子”。既是古人的历法坐标，也藏在生肖、时辰、节气里，至今仍在使用。' },
+        { n:'文房四宝', d:'笔墨纸砚：湖笔、徽墨、宣纸、端砚最负盛名。宣纸“轻似蝉翼白如雪”，寿命可达千年，故有“纸寿千年”之说。' },
+        { n:'中式建筑 · 榫卯', d:'不用一颗钉子，木构件凹凸咬合便可建起千年不倒的殿宇。故宫、应县木塔皆赖于此，是刚柔并济的东方智慧。' },
+        { n:'汉字之美 · 六书', d:'象形、指事、会意、形声、转注、假借——汉字的六种造字法。看懂六书，每个汉字都是一幅画、一个故事。' },
+        { n:'围棋', d:'“尧造围棋，以教子丹朱”。黑白两子、纵横十九道，规则极简而变化无穷，棋盘上361个交叉点暗合周天之数。' }
+      ],
+      tcm: [
+        { n:'子午觉', d:'中医主张“子时大睡，午时小憩”：晚上11点前入睡养胆气，中午小睡15–30分钟养心气。睡好子午觉，胜过吃补药。' },
+        { n:'春夏养阳，秋冬养阴', d:'《黄帝内经》的四季养生总纲：春夏多动升发阳气，秋冬收敛滋养阴精。顺应天时，身体才不容易“亏空”。' },
+        { n:'久坐伤肉', d:'“五劳所伤”之一。久坐气血不畅、脾主肌肉功能受损。每坐45分钟起身活动5分钟，踮脚、拉伸即可缓解。' },
+        { n:'食饮有节', d:'早吃好、午吃饱、晚吃少，七分饱最养脾胃。《内经》云“饮食自倍，肠胃乃伤”，暴饮暴食是脾胃第一杀手。' },
+        { n:'按揉足三里', d:'“常按足三里，胜吃老母鸡”。膝盖外侧凹陷下四横指处，每天按揉3分钟，健脾和胃、扶正培元，是最常用的保健穴。' },
+        { n:'情志养生', d:'怒伤肝、喜伤心、思伤脾、忧伤肺、恐伤肾。中医认为七情过激皆致病，保持情绪平和，就是最便宜的养生。' },
+        { n:'泡脚养生', d:'“寒从脚下起”。睡前40℃左右温水泡脚15分钟，微微出汗即可，引火归元、助眠安神。饭后一小时内不宜泡。' }
+      ],
+      // ===== 诗词赏析 =====
+      poems: [
+        { t:'《山居秋暝》· 王维', v:'空山新雨后，天气晚来秋。<br>明月松间照，清泉石上流。', a:'雨后空山、月照松林、泉流石上——短短二十字画出一幅有声有色的秋夜山水。王维“诗中有画”，以自然之静写内心之静，表达了对隐居生活的怡然自得。' },
+        { t:'《望庐山瀑布》· 李白', v:'日照香炉生紫烟，遥看瀑布挂前川。<br>飞流直下三千尺，疑是银河落九天。', a:'一个“挂”字化动为静，“三千尺”“落九天”极尽夸张——李白式的浪漫扑面而来。写瀑布，更写盛唐人的胸襟气象：天地壮阔，皆可入诗。' },
+        { t:'《游山西村》· 陆游', v:'山重水复疑无路，柳暗花明又一村。', a:'本是写山村景色的曲折幽深，却道出人生至理：困境走到尽头，往往就是转机。绝望与希望一线之隔，这份豁达让此句千年传诵。' },
+        { t:'《定风波》· 苏轼', v:'竹杖芒鞋轻胜马，谁怕？<br>一蓑烟雨任平生。', a:'途中遇雨，同行皆狼狈，苏轼却缓步吟啸。“一蓑烟雨任平生”——风雨既躲不过，不如坦然走过。这是苏轼历经贬谪后的通透，也是中国文人最潇洒的背影。' },
+        { t:'《登鹳雀楼》· 王之涣', v:'白日依山尽，黄河入海流。<br>欲穷千里目，更上一层楼。', a:'前两句写景壮阔如画，后两句翻出哲理：想看得更远，就要站得更高。写楼，实写人生进取之道，是唐诗中“景理交融”的典范。' },
+        { t:'《相思》· 王维', v:'红豆生南国，春来发几枝。<br>愿君多采撷，此物最相思。', a:'不直说思念，只托红豆寄情。语言浅白如话，情意却深婉绵长——最高级的抒情，往往是克制的。' },
+        { t:'《题西林壁》· 苏轼', v:'不识庐山真面目，只缘身在此山中。', a:'看山如此，看事亦然：身在局中，反而看不清全貌。跳出来、换个角度，才见真相。宋诗好说理，此句是“理趣”的巅峰。' }
+      ],
+      idioms: [
+        { w:'水滴石穿', s:'宋·罗大经《鹤林玉露》：“绳锯木断，水滴石穿。”', a:'水不断下滴，能把石头滴穿。比喻只要坚持不懈，力量虽小也能成就难事。练字、学英语正是如此——每天一点点，胜过偶尔一大步。' },
+        { w:'胸有成竹', s:'宋·苏轼《文与可画筼筜谷偃竹记》', a:'画家文同画竹前，心中已有完整的竹子形象。比喻做事之前已有通盘考虑和把握。灵感靠积累，下笔前的“成竹”来自平日观察。' },
+        { w:'闻鸡起舞', s:'《晋书·祖逖传》', a:'祖逖与刘琨半夜听到鸡叫就起床舞剑。形容有志之士及时奋发、刻苦自励。自律不是苦行，而是把志向落实到每一个清晨。' },
+        { w:'豁然开朗', s:'晋·陶渊明《桃花源记》：“复行数十步，豁然开朗。”', a:'原指由狭窄幽暗突然变得开阔明亮，后比喻突然领悟了道理。学习中的“卡壳”常常只差一步，坚持穿过“初极狭”，才有桃花源。' },
+        { w:'融会贯通', s:'宋·朱熹《朱子全书》', a:'把各方面的知识和道理融合贯穿，获得全面透彻的理解。真正学会一样东西的标志：能用自己的话讲清楚，还能用到别处。' },
+        { w:'笔走龙蛇', s:'唐·李白《草书歌行》：“时时只见龙蛇走。”', a:'形容书法笔势矫健灵动，如龙蛇飞舞。练字先求稳，再求活——楷书立骨，行草生韵，方能笔下有龙蛇。' },
+        { w:'温故知新', s:'《论语·为政》：“温故而知新，可以为师矣。”', a:'复习旧知识能获得新理解、新收获。复盘的意义正在于此：回头看不是浪费时间，而是把经验变成能力。' }
+      ],
+      // ===== 实时大数据 =====
+      dataNews: [
+        { h:'先信源，后情绪', d:'重大突发事件，以新华社、人民日报、央视新闻、路透社、BBC 等一手信源为准，别被二手标题带节奏。' },
+        { h:'事实-观点拆解法', d:'看到热点先问：这是事实还是观点？消息源是谁？有没有多方印证？养成 10 秒冷静判断的习惯。' },
+        { h:'建立你的信源清单', d:'把 3-5 个信任的媒体设为常读，比刷热搜更高效。信息节食也是生产力。' },
+        { h:'对照国际视角', d:'同一事件中外报道角度常不同，对照阅读才更接近全貌，避免单一视角的偏见。' },
+        { h:'警惕信息茧房', d:'算法只推你爱看的。主动搜索对立观点，是保持清醒的低成本方式。' }
+      ],
+      dataEcon: [
+        { h:'看懂三大指数', d:'上证、深证成指、创业板指是 A 股晴雨表；道指、纳指、标普代表美股。先看大盘再看板块。' },
+        { h:'利率是底层逻辑', d:'央行加息降息、LPR 调整，会传导到房贷、理财、消费。钱往哪流，机会就在哪。' },
+        { h:'关注北向资金', d:'外资连续净流向常被视作情绪风向标，可作参考而非唯一依据。' },
+        { h:'别追涨杀跌', d:'行情波动时纪律比预测重要。定投、分散、长期视角，是普通人的护城河。' },
+        { h:'看懂 CPI 与 PPI', d:'通胀（CPI）与工业（PPI）数据，反映经济冷热，是影响政策与市场的温度计。' }
+      ],
+      dataPolicy: [
+        { h:'政策看国务院官网', d:'重大政策以国务院、发改委、财政部、央行官网发布为准。原文 > 解读 > 传闻。' },
+        { h:'留意征求意见稿', d:'很多政策先发征求意见稿，这是预判方向的最佳窗口，关系到行业冷暖。' },
+        { h:'地方政策也重要', d:'一线城市的落户、补贴、产业规划常藏机会。中央定方向，地方定节奏。' },
+        { h:'合规是底线', d:'无论做内容还是做生意，先看政策红线。踩线一时爽，封号火葬场。' },
+        { h:'读懂国家规划', d:'国家五年规划里藏着未来产业重心与资金流向，是看大趋势的地图。' }
+      ],
+      dataFinance: [
+        { h:'先建应急金', d:'留出 3-6 个月生活费作应急金（货基/存款），再谈投资。现金是睡得着觉的底气。' },
+        { h:'理解复利', d:'年化 8%、投 20 年，本金约翻 4.6 倍。时间是普通人最好的朋友，越早开始越轻松。' },
+        { h:'资产配置四象限', d:'现金、固收、权益、另类，按风险承受力分配。别把鸡蛋放一个篮子。' },
+        { h:'警惕高息诱惑', d:'承诺「稳赚不赔、收益远超市场」的基本是坑。看清底层资产再掏钱。' },
+        { h:'分散买入时点', d:'一次性押注不如分批定投，平滑成本、降低择时风险。' }
+      ],
+      dataTech: [
+        { h:'AI 仍是主线', d:'大模型、Agent、多模态持续迭代。关注「能落地到工作流」的应用，而非只会 demo 的玩具。' },
+        { h:'算力与芯片', d:'算力、先进制程、国产替代是硬科技核心。底层突破决定上层能飞多高。' },
+        { h:'新能源与储能', d:'光伏、储能、固态电池进展，直接影响能源结构与相关产业。' },
+        { h:'生物科技拐点', d:'基因编辑、AI 制药、脑机接口正从实验室走向临床，长期值得跟踪。' },
+        { h:'关注开源生态', d:'开源大模型与工具链降低门槛，普通人也能站在巨人肩膀上做应用。' }
+      ],
+      dataLinks: {
+        news: [
+          { name: '新华网', icon: '📰', url: 'https://www.news.cn' },
+          { name: '央视新闻', icon: '📺', url: 'https://news.cctv.com' },
+          { name: '澎湃新闻', icon: '🌊', url: 'https://www.thepaper.cn' },
+          { name: '路透社', icon: '🌐', url: 'https://www.reuters.com' },
+          { name: 'BBC 中文', icon: '🔵', url: 'https://www.bbc.com/zhongwen' },
+          { name: '财新网', icon: '💡', url: 'https://www.caixin.com' }
+        ],
+        econ: [
+          { name: '东方财富', icon: '📈', url: 'https://www.eastmoney.com' },
+          { name: '新浪财经', icon: '💹', url: 'https://finance.sina.com.cn' },
+          { name: '英为财情', icon: '🌍', url: 'https://cn.investing.com' },
+          { name: '华尔街见闻', icon: '🏛️', url: 'https://wallstreetcn.com' },
+          { name: '金十数据', icon: '⏱️', url: 'https://www.jin10.com' }
+        ],
+        policy: [
+          { name: '中国政府网', icon: '🏛️', url: 'https://www.gov.cn' },
+          { name: '国家发改委', icon: '📊', url: 'https://www.ndrc.gov.cn' },
+          { name: '财政部', icon: '💰', url: 'http://www.mof.gov.cn' },
+          { name: '中国人民银行', icon: '🏦', url: 'http://www.pbc.gov.cn' },
+          { name: '工信部', icon: '🏭', url: 'https://www.miit.gov.cn' }
+        ],
+        finance: [
+          { name: '且慢', icon: '🐢', url: 'https://www.qieman.com' },
+          { name: '蛋卷基金', icon: '🥚', url: 'https://danjuanfunds.com' },
+          { name: '雪球', icon: '⚪', url: 'https://xueqiu.com' },
+          { name: '集思录', icon: '📚', url: 'https://www.jisilu.cn' },
+          { name: '中国证券报', icon: '🗞️', url: 'https://www.cs.com.cn' }
+        ],
+        tech: [
+          { name: '机器之心', icon: '🤖', url: 'https://www.jiqizhixin.com' },
+          { name: '量子位', icon: '⚛️', url: 'https://www.qbitai.com' },
+          { name: '36氪', icon: '🔆', url: 'https://36kr.com' },
+          { name: '极客公园', icon: '🚀', url: 'https://www.geekpark.net' },
+          { name: 'Hacker News', icon: '🧡', url: 'https://news.ycombinator.com' }
+        ]
+      }
+    };
+
+    function render(module) {
+      const titleEl = document.getElementById('sheetTitle');
+      const bodyEl = document.getElementById('sheetBody');
+
+      if (module === 'plan') {
+        titleEl.textContent = '📋 每日计划';
+        bodyEl.innerHTML = `
+          <div class="block"><div class="block-label">📝 我的今日计划（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="plan" placeholder="写下今天要做的 3 件事，例如：&#10;① 拍一条热点二创&#10;② 背 10 个单词&#10;③ 练字 30 分钟"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>
+          <div class="block"><div class="block-label">🧭 计划小建议</div><div class="desc-text">用「三件事法则」：每天只列 3 件核心任务，做完即胜利。其余记入备忘录，避免分散注意力。</div></div>`;
+        return;
+      }
+
+      if (module === 'hot') {
+        titleEl.textContent = '🔥 爆款热点内容及视频/二创';
+        bodyEl.innerHTML = `
+          <div class="block"><div class="block-label">📡 一键查看各平台热点</div>
+            <div class="link-grid c2">
+              <a class="link-card" href="https://www.douyin.com/hot" target="_blank" rel="noopener"><div class="lc-icon">🎵</div><div class="lc-name">抖音热榜</div></a>
+              <a class="link-card" href="https://www.xiaohongshu.com/explore" target="_blank" rel="noopener"><div class="lc-icon">📕</div><div class="lc-name">小红书热门</div></a>
+              <a class="link-card" href="https://s.weibo.com/top/summary" target="_blank" rel="noopener"><div class="lc-icon">🔴</div><div class="lc-name">微博热搜</div></a>
+              <a class="link-card" href="https://www.xiaoyuzhoufm.com/" target="_blank" rel="noopener"><div class="lc-icon">🪐</div><div class="lc-name">小宇宙热门播客</div></a>
+            </div>
+            <div style="font-size:12px;color:var(--text-light);margin-top:8px;">点击直接跳转对应平台热点页（建议在浏览器中打开）。小宇宙首页即热门播客推送，手机上装了 App 会自动唤起。</div>
+          </div>
+          <div class="block"><div class="block-label">✏️ 二创思路</div><div class="tip-box">① 找热点 → ② 提炼情绪共鸣点 → ③ 加上自己的视角/专业 → ④ 30秒内讲清「冲突+反转+价值」。热点要快，但观点要独到。</div></div>
+          <div class="block"><div class="block-label">📥 我的选题 / 二创记录（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_hot" placeholder="记下今天想追的热点、二创脚本思路、对标账号……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        return;
+      }
+
+      if (module === 'inspire') {
+        titleEl.textContent = '✨ 灵感收集';
+        bodyEl.innerHTML = `
+          <div class="block"><div class="block-label">🧠 灵感捕手（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="inspire" placeholder="好点子转瞬即逝，立刻记一句话关键词……"></textarea>
+            <div class="edit-hint">分类建议：选题 / 金句 / 结构 / 标题 / 表现手法</div>
+          </div>
+          <div class="block"><div class="block-label">💡 今日灵感触发词</div><div class="desc-text">「${pick(['反差感','日常里的仪式感','一个人也行','原来可以这样','我从X学到的','如果只说一句','被忽略的细节','三个为什么'])}」 —— 围绕它发散 3 个选题方向。</div></div>`;
+        return;
+      }
+
+      if (module === 'memo') {
+        titleEl.textContent = '📝 备忘录';
+        bodyEl.innerHTML = `
+          <div class="block"><div class="block-label">✍️ 快速记录（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="memo" placeholder="待回消息、待办、灵感碎片、明日重点……"></textarea>
+            <div class="edit-hint">随手记，每天睡前清空一次，重要的迁移到每日计划。</div>
+          </div>
+          <div class="block"><div class="block-label">🗂️ 清单模板</div><div class="desc-text">• 待回消息：___<br>• 待办事项：___<br>• 灵感碎片：___<br>• 明日重点：___</div></div>`;
+        return;
+      }
+
+      if (module === 'data') {
+        const panels = [
+          { id:'news', icon:'📰', label:'最新新闻', tip: pick(DATA.dataNews), links: DATA.dataLinks.news },
+          { id:'econ', icon:'💹', label:'经济行情', tip: pick(DATA.dataEcon), links: DATA.dataLinks.econ },
+          { id:'policy', icon:'🏛️', label:'实时政策', tip: pick(DATA.dataPolicy), links: DATA.dataLinks.policy },
+          { id:'finance', icon:'💰', label:'理财知识', tip: pick(DATA.dataFinance), links: DATA.dataLinks.finance },
+          { id:'tech', icon:'🚀', label:'前沿技术', tip: pick(DATA.dataTech), links: DATA.dataLinks.tech }
+        ];
+        titleEl.textContent = '📡 实时大数据';
+        bodyEl.innerHTML = `
+          <div class="tabs">
+            ${panels.map(p => `<button class="tab ${p.id==='news'?'active':''}" data-tab="${p.id}">${p.icon} ${p.label}</button>`).join('')}
+          </div>
+          ${panels.map(p => `
+          <div class="panel ${p.id==='news'?'active':''}" data-panel="${p.id}">
+            <div class="block-label">📌 今日推送 · ${p.label}</div>
+            <div class="scene-card"><div style="font-size:16px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${p.tip.h}</div><div style="font-size:14px;color:var(--text-light);line-height:1.8;">${p.tip.d}</div></div>
+            <div class="block-label" style="margin-top:16px;">🔗 实时信源（点击直达）</div>
+            <div class="link-grid c2">${p.links.map(l => `<a class="link-card" href="${l.url}" target="_blank" rel="noopener"><div class="lc-icon">${l.icon}</div><div class="lc-name">${l.name}</div></a>`).join('')}</div>
+            <div style="font-size:12px;color:var(--text-light);margin-top:8px;">点击卡片跳转对应平台实时页面，建议用浏览器打开；链接随版本更新，与电脑端一致。</div>
+          </div>`).join('')}
+          <div class="block" style="margin-top:18px;"><div class="block-label">⭐ 我的关注 / 收藏（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_data" placeholder="想持续追踪的议题、关注的账号、收藏的链接与速记……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        bindTabs(bodyEl);
+        return;
+      }
+
+      if (module === 'share') {
+        const h = pick(DATA.heritage);
+        const c = pick(DATA.culture);
+        const t = pick(DATA.tcm);
+        titleEl.textContent = '🏮 每日分享';
+        bodyEl.innerHTML = `
+          <div class="tabs">
+            <button class="tab active" data-tab="heritage">🏺 非遗知识</button>
+            <button class="tab" data-tab="culture">📜 传统文化</button>
+            <button class="tab" data-tab="tcm">🌿 中医养生</button>
+          </div>
+          <div class="panel active" data-panel="heritage">
+            <div class="block-label">📌 今日非遗知识点</div>
+            <div class="scene-card"><div style="font-size:17px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${h.n}</div><div style="font-size:14px;color:var(--text-light);line-height:1.8;">${h.d}</div></div>
+            <a class="video-link" href="https://www.ihchina.cn/" target="_blank" rel="noopener"><span class="vl-icon">🔗</span> 中国非物质文化遗产网 · 了解更多</a>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(h.n + ' 非遗')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${h.n}」相关视频</a>
+          </div>
+          <div class="panel" data-panel="culture">
+            <div class="block-label">📌 今日传统文化知识点</div>
+            <div class="scene-card"><div style="font-size:17px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${c.n}</div><div style="font-size:14px;color:var(--text-light);line-height:1.8;">${c.d}</div></div>
+            <a class="video-link" href="https://www.dpm.org.cn/Home.html" target="_blank" rel="noopener"><span class="vl-icon">🔗</span> 故宫博物院官网 · 传统文化专题</a>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(c.n + ' 传统文化')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${c.n}」相关视频</a>
+          </div>
+          <div class="panel" data-panel="tcm">
+            <div class="block-label">📌 今日中医养生知识点</div>
+            <div class="scene-card"><div style="font-size:17px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${t.n}</div><div style="font-size:14px;color:var(--text-light);line-height:1.8;">${t.d}</div></div>
+            <a class="video-link" href="https://www.satcm.gov.cn/" target="_blank" rel="noopener"><span class="vl-icon">🔗</span> 国家中医药管理局 · 权威科普</a>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(t.n + ' 中医养生')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${t.n}」相关视频</a>
+            <div style="font-size:12px;color:var(--text-light);margin-top:10px;">内容仅供日常保健参考，身体不适请及时就医。</div>
+          </div>
+          <div class="block" style="margin-top:16px;"><div class="block-label">📤 我的分享摘录（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_share" placeholder="今天想分享出去的知识点、自己的理解与感想……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        bindTabs(bodyEl);
+        return;
+      }
+
+      if (module === 'book') {
+        const b = pick(DATA.books);
+        titleEl.textContent = '📚 读书计划';
+        bodyEl.innerHTML = `
+          <div class="block"><div class="block-label">📖 今日推荐一本书</div>
+            <div class="book-card"><div class="book-title">${b.title}</div><div class="book-author">作者：${b.author}</div><div class="book-desc">${b.desc}</div></div>
+          </div>
+          <div class="block"><div class="block-label">💬 今日名言</div><div class="quote-box"><span class="qmark">“</span>${b.quote}<span class="qmark">”</span></div></div>
+          <div class="block"><div class="block-label">🌱 阅读小习惯</div><div class="desc-text">每天读 10 页，一年读完 12 本。关键是「每天都读」，哪怕只是一页。</div></div>
+          <div class="block"><div class="block-label">📔 我的读书笔记（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_book" placeholder="正在读的书、页码进度、金句摘抄、读后感……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        return;
+      }
+
+      if (module === 'english') {
+        const scene = pick(DATA.scenes);
+        const nce = pick(DATA.nce);
+        const words = pick(DATA.vocabGroups);
+        titleEl.textContent = '🌍 英语学习';
+        bodyEl.innerHTML = `
+          <div class="tabs">
+            <button class="tab active" data-tab="speak">🗣️ 口语练习</button>
+            <button class="tab" data-tab="nce">📘 新概念</button>
+            <button class="tab" data-tab="word">🔤 单词记忆</button>
+          </div>
+          <div class="panel active" data-panel="speak">
+            <div class="block-label">📌 今日推送 · ${scene.name}</div>
+            <div class="scene-card">${scene.lines.map(l => `<div class="scene-line"><div class="scene-en">${l.en}</div><div class="scene-cn">${l.cn}</div></div>`).join('')}</div>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.6;">练习方法：先跟读3遍，再看着中文说英文，最后不看提示复述。开口比完美更重要。</div>
+          </div>
+          <div class="panel" data-panel="nce">
+            <div class="block-label">📌 ${nce.lesson}</div>
+            <div class="scene-card"><div style="font-size:16px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${nce.point}</div><div style="font-size:14px;color:var(--text-light);line-height:1.7;">${nce.tip}</div></div>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.6;">建议：抄写例句2遍 → 造1个自己的句子 → 录音读3遍。</div>
+          </div>
+          <div class="panel" data-panel="word">
+            <div class="block-label">📌 今日推送 10 个单词</div>
+            <div class="word-list">${words.map(w => `<div class="word-item"><div class="word-head"><span class="word-en">${w.w}</span><span class="word-ph">${w.ph}</span></div><div class="word-cn">${w.cn}</div><div class="word-use">${w.use}</div></div>`).join('')}</div>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.6;">记忆法：连例句一起记，在场景中用一次，比死背10遍更牢。</div>
+          </div>
+          <div class="block" style="margin-top:16px;"><div class="block-label">📝 我的英语打卡 / 笔记（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_english" placeholder="今日跟读感受、易错发音、生词、想背的句子……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        bindTabs(bodyEl);
+        return;
+      }
+
+      if (module === 'calligraphy') {
+        const cb = pick(DATA.copybooks);
+        const ch = pick(DATA.dailyChars);
+        titleEl.textContent = '🖌️ 书法练习';
+        bodyEl.innerHTML = `
+          <div class="block"><span class="tag">初学者推荐</span>
+            <div style="margin-top:10px;"><div class="copybook"><div class="copybook-char">${cb.char}</div><div class="copybook-info"><div class="cb-name">${cb.name}</div><div class="cb-desc">${cb.desc}</div></div></div></div>
+          </div>
+          <div class="block"><div class="block-label">✍️ 今日临摹字</div>
+            <div class="tip-box" style="text-align:center;"><div style="font-size:56px;font-family:'KaiTi','STKaiti',serif;color:var(--primary-dark);line-height:1.2;">${ch}</div><div style="font-size:13px;color:var(--text-light);margin-top:6px;">先读帖 → 描红 → 对临 → 背临，每字写10遍。</div></div>
+          </div>
+          <div class="block"><div class="block-label">📐 入门要点</div><div class="desc-text">① 坐姿：头正、身直、臂开、足安<br>② 执笔：指实掌虚，腕平掌竖<br>③ 从基本笔画练起：横、竖、撇、捺、点<br>④ 每天专注练1-2个字，宁少勿滥</div></div>
+          <div class="block"><div class="block-label">🖊️ 我的练字打卡（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_calligraphy" placeholder="今天临了哪本帖、练了几个字、遇到的问题与心得……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        return;
+      }
+
+      if (module === 'poetry') {
+        const p = pick(DATA.poems);
+        const idm = pick(DATA.idioms);
+        titleEl.textContent = '🎐 诗词赏析';
+        bodyEl.innerHTML = `
+          <div class="tabs">
+            <button class="tab active" data-tab="poem">📜 古诗词</button>
+            <button class="tab" data-tab="idiom">🧧 成语</button>
+          </div>
+          <div class="panel active" data-panel="poem">
+            <div class="block-label">📌 今日一诗</div>
+            <div class="scene-card">
+              <div style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--primary-dark);">${p.t}</div>
+              <div style="font-size:17px;font-family:'KaiTi','STKaiti',serif;line-height:2;color:var(--text);text-align:center;margin-bottom:12px;">${p.v}</div>
+              <div style="font-size:14px;color:var(--text-light);line-height:1.8;"><b style="color:var(--primary-dark);">赏析：</b>${p.a}</div>
+            </div>
+            <a class="video-link" href="https://www.gushiwen.cn/" target="_blank" rel="noopener"><span class="vl-icon">🔗</span> 古诗文网 · 查更多名篇与注释</a>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(p.t.replace(/[《》]/g,'') + ' 赏析')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看这首诗的讲解视频</a>
+          </div>
+          <div class="panel" data-panel="idiom">
+            <div class="block-label">📌 今日一成语</div>
+            <div class="scene-card">
+              <div style="font-size:26px;font-weight:700;font-family:'KaiTi','STKaiti',serif;text-align:center;margin-bottom:10px;color:var(--primary-dark);letter-spacing:4px;">${idm.w}</div>
+              <div style="font-size:13px;color:var(--text-light);text-align:center;margin-bottom:12px;">出处：${idm.s}</div>
+              <div style="font-size:14px;color:var(--text-light);line-height:1.8;"><b style="color:var(--primary-dark);">解析：</b>${idm.a}</div>
+            </div>
+            <a class="video-link" href="https://hanyu.baidu.com/" target="_blank" rel="noopener"><span class="vl-icon">🔗</span> 百度汉语 · 查成语释义与接龙</a>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(idm.w + ' 成语故事')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${idm.w}」成语故事视频</a>
+          </div>
+          <div class="block" style="margin-top:16px;"><div class="block-label">🖋️ 我的诗词摘抄（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_poetry" placeholder="喜欢的诗句、成语造句、自己的赏析心得……可搭配书法练习临写。"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        bindTabs(bodyEl);
+        return;
+      }
+
+      if (module === 'exercise') {
+        const stretch = pick(DATA.stretchGroups);
+        const med = pick(DATA.meditationGroups);
+        const wk = pick(DATA.workoutGroups);
+        titleEl.textContent = '💪 锻炼身体';
+        bodyEl.innerHTML = `
+          <div class="tabs">
+            <button class="tab active" data-tab="stretch">🤸 每日拉伸</button>
+            <button class="tab" data-tab="meditate">🧘 每日冥想</button>
+            <button class="tab" data-tab="workout">🏃 每日运动</button>
+          </div>
+
+          <div class="panel active" data-panel="stretch">
+            <div class="block-label">📌 今日拉伸计划</div>
+            ${stretch.map(a => `<div class="action-item"><div class="action-emoji">${a.e}</div><div><div class="action-name">${a.n}</div><div class="action-meta">${a.m}</div></div></div>`).join('')}
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=全身拉伸跟练" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看拉伸教学视频</a>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.6;">拉伸要慢、到微微酸胀即可，不要弹振式硬拉。每个动作保持呼吸顺畅。</div>
+          </div>
+
+          <div class="panel" data-panel="meditate">
+            <div class="block-label">📌 今日冥想主题</div>
+            <div class="meditate-card"><div class="meditate-emoji">${med.e}</div><div class="meditate-name">${med.n}</div><div class="meditate-desc">${med.d}</div></div>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=引导冥想放松音乐" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看冥想引导视频</a>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.6;">找个安静角落，设好闹钟，不用追求「什么都不想」，把注意力轻轻带回就好。</div>
+          </div>
+
+          <div class="panel" data-panel="workout">
+            <div class="block-label">📌 今日运动计划</div>
+            <div class="plan-card"><div style="font-size:16px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;">${wk.e} ${wk.n}</div><div style="font-size:14px;color:var(--text-light);line-height:1.7;">${wk.d}</div></div>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=居家健身操跟练" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看运动跟练视频</a>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.6;">运动时注意保暖和动作标准，累了就减量，坚持比强度更重要。</div>
+          </div>
+          <div class="block" style="margin-top:16px;"><div class="block-label">✅ 我的运动打卡（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_exercise" placeholder="今日完成情况、体感、体重 / 步数、明日计划……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        bindTabs(bodyEl);
+        return;
+      }
+
+      if (module === 'settings') {
+        const cfg = getCfg();
+        let curProv = cfg.provider || 'gist';
+        titleEl.textContent = '⚙️ 同步设置';
+
+        const guides = {
+          gist: [
+            { t: '登录 GitHub 并创建访问令牌', d: '点下面按钮直达令牌创建页（已自动勾选 <b>gist</b> 权限）。滑到底点 <b>Generate token</b>，把生成的 <b>ghp_ 开头</b>字符串复制好。', link: { url: 'https://github.com/settings/tokens/new?scopes=gist&description=洋的工作台', txt: '打开令牌创建页' } },
+            { t: '新建一个 Gist 当作云端仓库', d: '文件名随便填（如 <b>data.json</b>），内容随便写一个字，点 <b>Create secret gist</b>。', link: { url: 'https://gist.github.com/', txt: '打开新建 Gist 页' } },
+            { t: '复制 Gist ID', d: '创建后看浏览器地址栏：<b>gist.github.com/你的名字/<u>这一串</u></b>，最后那串字母数字就是 Gist ID。' },
+            { t: '把令牌和 Gist ID 填到下面，保存', d: '点「保存并同步」。之后在<b>手机上打开同一个工作台</b>，填<b>同一组</b>令牌和 ID，两端就打通了。' }
+          ],
+          jsonbin: [
+            { t: '注册 / 登录 JSONBin.io', d: '用邮箱注册一个免费账号并登录。', link: { url: 'https://jsonbin.io/login', txt: '打开 JSONBin 登录页' } },
+            { t: '获取 Master Key', d: '进入 <b>API Keys</b> 页面，复制 <b>Master Key</b>（一长串字符）。', link: { url: 'https://jsonbin.io/api-keys', txt: '打开 API Keys 页' } },
+            { t: '创建一个 Bin', d: '进入 <b>Bins</b> → 新建一个 Bin，内容随便存一个 <b>{}</b>，保存后复制它的 <b>Bin ID</b>。', link: { url: 'https://jsonbin.io/app/bins', txt: '打开 Bins 页' } },
+            { t: '把 Master Key 和 Bin ID 填到下面，保存', d: '点「保存并同步」。手机端填<b>同一组</b>即可双向同步。' }
+          ]
+        };
+
+        function renderGuide() {
+          const steps = guides[curProv];
+          return `<div class="steps">${steps.map((s, i) => `
+            <div class="step"><div class="step-num">${i+1}</div>
+              <div class="step-body">${s.t}<br><span style="color:var(--text-light);">${s.d}</span>
+              ${s.link ? `<br><a class="step-link" href="${s.link.url}" target="_blank" rel="noopener">🔗 ${s.link.txt}</a>` : ''}
+              </div>
+            </div>`).join('')}</div>`;
+        }
+
+        bodyEl.innerHTML = `
+          <div class="block"><div class="block-label">🔗 选择同步方式（二选一）</div>
+            <div class="prov-pills">
+              <div class="prov-pill ${curProv==='gist'?'active':''}" data-prov="gist">GitHub Gist<div class="pp-sub">有 GitHub 账号推荐</div></div>
+              <div class="prov-pill ${curProv==='jsonbin'?'active':''}" data-prov="jsonbin">JSONBin.io<div class="pp-sub">注册即用</div></div>
+            </div>
+          </div>
+          <div class="block"><div class="block-label">📋 跟着做（约 2 分钟）</div>
+            <div id="guideBox">${renderGuide()}</div>
+          </div>
+          <div class="block"><div class="block-label">🔑 填入凭据（只存本机浏览器）</div>
+            <div class="form-row">
+              <label class="form-label" id="tokLabel">${curProv==='gist'?'GitHub 访问令牌 (ghp_...)':'Master Key'}</label>
+              <input class="form-input" id="setToken" type="password" placeholder="粘贴令牌 / Master Key" value="${cfg.token||''}" />
+            </div>
+            <div class="form-row">
+              <label class="form-label" id="setIdLabel">${curProv==='gist'?'Gist ID':'Bin ID'}</label>
+              <input class="form-input" id="setId" placeholder="粘贴 ${curProv==='gist'?'Gist':'Bin'} 的 ID" value="${cfg.id||''}" />
+            </div>
+            <button class="save-btn" id="setSave">保存并同步</button>
+            <button class="ghost-btn" id="setTest">🔌 测试连接</button>
+            <button class="ghost-btn" id="setSyncNow">🔄 立即同步一次</button>
+            <div class="test-result" id="testResult"></div>
+            <div class="sync-tip">令牌只保存在<b>你本机浏览器</b>，不会写进代码、也不会上传给任何人。电脑和手机各填一次（填同一组），即可两端双向同步。</div>
+          </div>`;
+
+        const tokLabel = bodyEl.querySelector('#tokLabel');
+        const idLabel = bodyEl.querySelector('#setIdLabel');
+        const idInput = bodyEl.querySelector('#setId');
+        const guideBox = bodyEl.querySelector('#guideBox');
+        const testResult = bodyEl.querySelector('#testResult');
+
+        bodyEl.querySelectorAll('.prov-pill').forEach(p => {
+          p.addEventListener('click', () => {
+            curProv = p.dataset.prov;
+            bodyEl.querySelectorAll('.prov-pill').forEach(x => x.classList.toggle('active', x.dataset.prov === curProv));
+            guideBox.innerHTML = renderGuide();
+            tokLabel.textContent = curProv === 'gist' ? 'GitHub 访问令牌 (ghp_...)' : 'Master Key';
+            idLabel.textContent = curProv === 'gist' ? 'Gist ID' : 'Bin ID';
+            idInput.placeholder = '粘贴 ' + (curProv === 'gist' ? 'Gist' : 'Bin') + ' 的 ID';
+          });
+        });
+
+        function readForm() {
+          return { provider: curProv, token: bodyEl.querySelector('#setToken').value.trim(), id: bodyEl.querySelector('#setId').value.trim() };
+        }
+
+        bodyEl.querySelector('#setSave').addEventListener('click', async () => {
+          const newCfg = readForm();
+          if (!newCfg.token || !newCfg.id) { testResult.className = 'test-result err'; testResult.textContent = '⚠️ 请先填写令牌和 ID 再保存。'; return; }
+          saveCfg(newCfg);
+          setStatus('已保存，同步中…', '');
+          testResult.className = 'test-result'; testResult.textContent = '保存成功，正在同步…';
+          await syncPush(); await syncPull();
+          setStatus('已同步 · ' + nowText(), 'ok');
+          testResult.className = 'test-result ok'; testResult.textContent = '✅ 已保存并完成一次同步。';
+        });
+
+        bodyEl.querySelector('#setTest').addEventListener('click', async () => {
+          const c = readForm();
+          if (!c.token || !c.id) { testResult.className = 'test-result err'; testResult.textContent = '⚠️ 请先填写令牌和 ID。'; return; }
+          testResult.className = 'test-result'; testResult.textContent = '正在测试连接…';
+          try {
+            await getRemote(c);
+            testResult.className = 'test-result ok'; testResult.textContent = '✅ 连接成功！凭据有效，可以放心保存。';
+          } catch (e) {
+            testResult.className = 'test-result err';
+            testResult.textContent = '❌ 连接失败：' + (String(e).includes('401') || String(e).includes('403') ? '令牌无效或权限不足。' : String(e).includes('404') ? 'ID 不存在，请检查 ' + (c.provider==='gist'?'Gist':'Bin') + ' ID。' : '请检查网络与填写内容。');
+          }
+        });
+
+        bodyEl.querySelector('#setSyncNow').addEventListener('click', async () => {
+          const c = getCfg();
+          if (!c.token || !c.id) { testResult.className = 'test-result err'; testResult.textContent = '⚠️ 请先保存凭据。'; return; }
+          setStatus('同步中…', '');
+          await syncPush(); await syncPull();
+          setStatus('已同步 · ' + nowText(), 'ok');
+          testResult.className = 'test-result ok'; testResult.textContent = '✅ 已完成一次同步。';
+        });
+        return;
+      }
+
+      if (module === 'ai') {
+        const tip = pick(DATA.aiTips);
+        titleEl.textContent = '🤖 AI技巧库';
+        bodyEl.innerHTML = `
+          <div class="block"><div class="block-label">🔗 AI 学习资源（点击直达）</div>
+            <div class="link-grid c2">${DATA.aiLinks.map(l => `<a class="link-card" href="${l.url}" target="_blank" rel="noopener"><div class="lc-icon">${l.icon}</div><div class="lc-name">${l.name}</div></a>`).join('')}</div>
+          </div>
+          <div class="block"><div class="block-label">💡 今日 AI 小技巧</div><div class="tip-box">${tip}</div></div>
+          <div class="block"><div class="block-label">🧰 常用工具</div><div class="desc-text">写作：ChatGPT / Claude · 绘图：Midjourney / SD · 视频：Sora / 可灵 · 配音：ElevenLabs · 翻译：DeepL</div></div>
+          <div class="block"><div class="block-label">⭐ 我的 AI 技巧收藏（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_ai" placeholder="好用的提示词、工具链接、学习心得，攒成自己的技巧库……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        return;
+      }
+    }
+
+    function bindTabs(scope) {
+      scope.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          scope.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          scope.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          scope.querySelector(`.panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+        });
+      });
+    }
+
+    /* ===== 同步引擎 ===== */
+    const LOCAL_KEY = 'yang_wb_store';
+    const CFG_KEY = 'yang_wb_sync';
+    const syncDot = document.getElementById('syncDot');
+    const syncStatus = document.getElementById('syncStatus');
+
+    function nowText() {
+      const d = new Date();
+      return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+    function setStatus(text, state) {
+      syncStatus.textContent = '同步状态：' + text;
+      syncDot.className = 'sync-dot' + (state ? ' ' + state : '');
+    }
+    function getCfg() { try { return JSON.parse(localStorage.getItem(CFG_KEY)) || {}; } catch(e){ return {}; } }
+    function saveCfg(c) { localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
+    function loadStore() {
+      try { const s = JSON.parse(localStorage.getItem(LOCAL_KEY)); if (s && s.data) return s; } catch(e){}
+      return { version: 1, updatedAt: 0, data: {} };
+    }
+    function saveLocal() { localStorage.setItem(LOCAL_KEY, JSON.stringify(store)); }
+    let store = loadStore();
+
+    async function gistGet(cfg) {
+      const r = await fetch('https://api.github.com/gists/' + cfg.id, { headers: { 'Authorization': 'token ' + cfg.token } });
+      if (!r.ok) throw new Error('gist get ' + r.status);
+      const j = await r.json();
+      const f = j.files && j.files['workbench.json'];
+      return f ? JSON.parse(f.content) : null;
+    }
+    async function gistPut(cfg, data) {
+      const r = await fetch('https://api.github.com/gists/' + cfg.id, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'token ' + cfg.token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'workbench.json': { content: JSON.stringify(data) } } })
+      });
+      if (!r.ok) throw new Error('gist put ' + r.status);
+    }
+    async function jbGet(cfg) {
+      const r = await fetch('https://api.jsonbin.io/v3/b/' + cfg.id + '/latest', { headers: { 'X-Master-Key': cfg.token } });
+      if (!r.ok) throw new Error('jb get ' + r.status);
+      const j = await r.json();
+      return j.record || null;
+    }
+    async function jbPut(cfg, data) {
+      const r = await fetch('https://api.jsonbin.io/v3/b/' + cfg.id, {
+        method: 'PUT',
+        headers: { 'X-Master-Key': cfg.token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!r.ok) throw new Error('jb put ' + r.status);
+    }
+    function getRemote(cfg) { return cfg.provider === 'gist' ? gistGet(cfg) : jbGet(cfg); }
+    function putRemote(cfg, data) { return cfg.provider === 'gist' ? gistPut(cfg, data) : jbPut(cfg, data); }
+
+    async function syncPull() {
+      const cfg = getCfg();
+      if (!cfg || !cfg.token || !cfg.id) return;
+      try {
+        const remote = await getRemote(cfg);
+        if (remote && remote.updatedAt && remote.updatedAt > store.updatedAt) { store = remote; saveLocal(); }
+        setStatus('已同步 · ' + nowText(), 'ok');
+      } catch (e) { console.error(e); setStatus('同步失败（检查令牌/网络）', 'err'); }
+    }
+    let pushTimer = null;
+    function debouncedPush() { clearTimeout(pushTimer); pushTimer = setTimeout(syncPush, 700); }
+    async function syncPush() {
+      const cfg = getCfg();
+      if (!cfg || !cfg.token || !cfg.id) return;
+      store.updatedAt = Date.now();
+      saveLocal();
+      try { await putRemote(cfg, store); setStatus('已同步 · ' + nowText(), 'ok'); }
+      catch (e) { console.error(e); setStatus('已存本地，同步失败', 'err'); }
+    }
+    function wireEditors(scope) {
+      scope.querySelectorAll('.edit-area').forEach(el => {
+        const key = el.dataset.key;
+        el.value = (store.data[key] || '');
+        el.addEventListener('input', () => { store.data[key] = el.value; debouncedPush(); });
+      });
+    }
+
+    /* ===== 交互绑定 ===== */
+    const sheetOverlay = document.getElementById('sheetOverlay');
+    const sheetClose = document.getElementById('sheetClose');
+    async function openModule(module) {
+      await syncPull();
+      render(module);
+      wireEditors(document.getElementById('sheetBody'));
+      sheetOverlay.classList.add('show');
+    }
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', () => openModule(item.dataset.module));
+    });
+    document.getElementById('gearBtn').addEventListener('click', () => openModule('settings'));
+    sheetClose.addEventListener('click', () => sheetOverlay.classList.remove('show'));
+    sheetOverlay.addEventListener('click', (e) => { if (e.target === sheetOverlay) sheetOverlay.classList.remove('show'); });
+
+    /* 启动：拉取一次同步 */
+    (async () => {
+      const cfg = getCfg();
+      if (cfg && cfg.token && cfg.id) { await syncPull(); } else { setStatus('未连接'); }
+    })();
+
+    let deferredPrompt = null;
+    const installHint = document.getElementById('installHint');
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installHint.classList.add('show'); });
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') installHint.classList.remove('show');
+      deferredPrompt = null;
+    });
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(console.error);
+  </script>
+</body>
+</html>
