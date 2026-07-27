@@ -999,8 +999,20 @@
             { t: '获取 Master Key', d: '进入 <b>API Keys</b> 页面，复制 <b>Master Key</b>（一长串字符）。', link: { url: 'https://jsonbin.io/api-keys', txt: '打开 API Keys 页' } },
             { t: '创建一个 Bin', d: '进入 <b>Bins</b> → 新建一个 Bin，内容随便存一个 <b>{}</b>，保存后复制它的 <b>Bin ID</b>。', link: { url: 'https://jsonbin.io/app/bins', txt: '打开 Bins 页' } },
             { t: '把 Master Key 和 Bin ID 填到下面，保存', d: '点「保存并同步」。手机端填<b>同一组</b>即可双向同步。' }
+          ],
+          github: [
+            { t: '用你现有的 GitHub 令牌即可', d: '你已经有一个 <b>ghp_ 开头</b>的 GitHub 令牌（需有 <b>repo</b> 权限，你这个就有）。直接把它填到下面「访问令牌」里。' },
+            { t: '填一个仓库名', d: '在「仓库名」里填一个英文名字，例如 <b>yang-workbench-sync</b>（随便起；首次保存会自动创建成<b>私有仓库</b>，别人看不到你的笔记）。' },
+            { t: '保存', d: '点「保存并同步」。首次会联网创建私有仓库并写入同步文件。' },
+            { t: '手机端同样操作', d: '在手机工作台的设置里选「GitHub 仓库」，填<b>同一个令牌</b>和<b>同一个仓库名</b>，两端就打通了。' }
           ]
         };
+
+        function provLabels(p) {
+          if (p === 'github') return { tok: 'GitHub 访问令牌 (ghp_...)', id: '仓库名（如 yang-workbench-sync）' };
+          if (p === 'gist') return { tok: 'GitHub 访问令牌 (ghp_...)', id: 'Gist ID' };
+          return { tok: 'Master Key', id: 'Bin ID' };
+        }
 
         function renderGuide() {
           const steps = guides[curProv];
@@ -1013,9 +1025,10 @@
         }
 
         bodyEl.innerHTML = `
-          <div class="block"><div class="block-label">🔗 选择同步方式（二选一）</div>
+          <div class="block"><div class="block-label">🔗 选择同步方式（三选一）</div>
             <div class="prov-pills">
               <div class="prov-pill ${curProv==='gist'?'active':''}" data-prov="gist">GitHub Gist<div class="pp-sub">有 GitHub 账号推荐</div></div>
+              <div class="prov-pill ${curProv==='github'?'active':''}" data-prov="github">GitHub 仓库<div class="pp-sub">用现有令牌·私有</div></div>
               <div class="prov-pill ${curProv==='jsonbin'?'active':''}" data-prov="jsonbin">JSONBin.io<div class="pp-sub">注册即用</div></div>
             </div>
           </div>
@@ -1024,12 +1037,12 @@
           </div>
           <div class="block"><div class="block-label">🔑 填入凭据（只存本机浏览器）</div>
             <div class="form-row">
-              <label class="form-label" id="tokLabel">${curProv==='gist'?'GitHub 访问令牌 (ghp_...)':'Master Key'}</label>
+              <label class="form-label" id="tokLabel">${provLabels(curProv).tok}</label>
               <input class="form-input" id="setToken" type="password" placeholder="粘贴令牌 / Master Key" value="${cfg.token||''}" />
             </div>
             <div class="form-row">
-              <label class="form-label" id="setIdLabel">${curProv==='gist'?'Gist ID':'Bin ID'}</label>
-              <input class="form-input" id="setId" placeholder="粘贴 ${curProv==='gist'?'Gist':'Bin'} 的 ID" value="${cfg.id||''}" />
+              <label class="form-label" id="setIdLabel">${provLabels(curProv).id}</label>
+              <input class="form-input" id="setId" placeholder="粘贴 ${provLabels(curProv).id}" value="${cfg.id||''}" />
             </div>
             <button class="save-btn" id="setSave">保存并同步</button>
             <button class="ghost-btn" id="setTest">🔌 测试连接</button>
@@ -1049,9 +1062,10 @@
             curProv = p.dataset.prov;
             bodyEl.querySelectorAll('.prov-pill').forEach(x => x.classList.toggle('active', x.dataset.prov === curProv));
             guideBox.innerHTML = renderGuide();
-            tokLabel.textContent = curProv === 'gist' ? 'GitHub 访问令牌 (ghp_...)' : 'Master Key';
-            idLabel.textContent = curProv === 'gist' ? 'Gist ID' : 'Bin ID';
-            idInput.placeholder = '粘贴 ' + (curProv === 'gist' ? 'Gist' : 'Bin') + ' 的 ID';
+            const lbl = provLabels(curProv);
+            tokLabel.textContent = lbl.tok;
+            idLabel.textContent = lbl.id;
+            idInput.placeholder = '粘贴 ' + lbl.id;
           });
         });
 
@@ -1079,7 +1093,7 @@
             testResult.className = 'test-result ok'; testResult.textContent = '✅ 连接成功！凭据有效，可以放心保存。';
           } catch (e) {
             testResult.className = 'test-result err';
-            testResult.textContent = '❌ 连接失败：' + (String(e).includes('401') || String(e).includes('403') ? '令牌无效或权限不足。' : String(e).includes('404') ? 'ID 不存在，请检查 ' + (c.provider==='gist'?'Gist':'Bin') + ' ID。' : '请检查网络与填写内容。');
+            testResult.textContent = '❌ 连接失败：' + (String(e).includes('401') || String(e).includes('403') ? '令牌无效或权限不足。' : String(e).includes('404') ? 'ID 不存在，请检查 ' + (c.provider==='gist'?'Gist':c.provider==='github'?'仓库':'Bin') + ' ID。' : '请检查网络与填写内容。');
           }
         });
 
@@ -1174,8 +1188,62 @@
       });
       if (!r.ok) throw new Error('jb put ' + r.status);
     }
-    function getRemote(cfg) { return cfg.provider === 'gist' ? gistGet(cfg) : jbGet(cfg); }
-    function putRemote(cfg, data) { return cfg.provider === 'gist' ? gistPut(cfg, data) : jbPut(cfg, data); }
+    let _ghUser = null;
+    async function ghUser(token) {
+      if (_ghUser) return _ghUser;
+      const r = await fetch('https://api.github.com/user', { headers: { 'Authorization': 'token ' + token } });
+      if (!r.ok) throw new Error('gh user ' + r.status);
+      const j = await r.json();
+      _ghUser = j.login;
+      return _ghUser;
+    }
+    async function ghGet(cfg) {
+      const owner = await ghUser(cfg.token);
+      const r = await fetch('https://api.github.com/repos/' + owner + '/' + cfg.id + '/contents/sync.json', { headers: { 'Authorization': 'token ' + cfg.token } });
+      if (r.status === 404) return null;
+      if (!r.ok) throw new Error('gh get ' + r.status);
+      const j = await r.json();
+      const content = decodeURIComponent(escape(atob(j.content.replace(/\n/g, ''))));
+      try { return JSON.parse(content); } catch (e) { return null; }
+    }
+    async function ghEnsureRepo(cfg) {
+      const owner = await ghUser(cfg.token);
+      const r = await fetch('https://api.github.com/repos/' + owner + '/' + cfg.id, { headers: { 'Authorization': 'token ' + cfg.token } });
+      if (r.ok) return;
+      if (r.status !== 404) throw new Error('gh repo ' + r.status);
+      const c = await fetch('https://api.github.com/user/repos', {
+        method: 'POST',
+        headers: { 'Authorization': 'token ' + cfg.token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: cfg.id, private: true, description: "Y's 洋的工作台 多端同步数据", auto_init: false })
+      });
+      if (!c.ok) throw new Error('gh create ' + c.status);
+    }
+    async function ghPut(cfg, data) {
+      await ghEnsureRepo(cfg);
+      const owner = await ghUser(cfg.token);
+      const path = 'https://api.github.com/repos/' + owner + '/' + cfg.id + '/contents/sync.json';
+      let sha = null;
+      const g = await fetch(path, { headers: { 'Authorization': 'token ' + cfg.token } });
+      if (g.ok) { const j = await g.json(); sha = j.sha; }
+      else if (g.status !== 404) throw new Error('gh get ' + g.status);
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+      const body = { message: 'sync update', content: content, branch: 'main' };
+      if (sha) body.sha = sha;
+      const r = await fetch(path, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + cfg.token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!r.ok) throw new Error('gh put ' + r.status);
+    }
+    function getRemote(cfg) {
+      if (cfg.provider === 'github') return ghGet(cfg);
+      return cfg.provider === 'gist' ? gistGet(cfg) : jbGet(cfg);
+    }
+    function putRemote(cfg, data) {
+      if (cfg.provider === 'github') return ghPut(cfg, data);
+      return cfg.provider === 'gist' ? gistPut(cfg, data) : jbPut(cfg, data);
+    }
 
     async function syncPull() {
       const cfg = getCfg();
