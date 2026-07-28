@@ -439,9 +439,6 @@
         <li class="menu-item" data-module="exercise">
           <div class="menu-icon">💪</div><div class="menu-text">锻炼身体</div><div class="menu-arrow">›</div>
         </li>
-        <li class="menu-item" data-module="ai">
-          <div class="menu-icon">🤖</div><div class="menu-text">AI技巧库</div><div class="menu-arrow">›</div>
-        </li>
       </ul>
     </div>
 
@@ -550,20 +547,6 @@
         { name: '《曹全碑》隶书', desc: '秀美多姿的隶书入门，蚕头燕尾，练笔意。', char: '和' }
       ],
       dailyChars: ['永','和','九','玄','福','正','書','道','心','静','山','水','春','風','月','雲'],
-      aiLinks: [
-        { name: '通往AGI之路', icon: '🧭', url: 'https://waytoagi.com' },
-        { name: '机器之心', icon: '📰', url: 'https://www.jiqizhixin.com' },
-        { name: 'OpenAI 官方', icon: '🟢', url: 'https://platform.openai.com/docs' },
-        { name: 'Hugging Face', icon: '🤗', url: 'https://huggingface.co/learn' },
-        { name: 'Papers with Code', icon: '📄', url: 'https://paperswithcode.com' },
-        { name: '吴恩达 AI 课', icon: '🎓', url: 'https://www.deeplearning.ai/courses' }
-      ],
-      aiTips: [
-        '写提示词三要素：角色 + 任务 + 约束。例：「你是文案编辑，请把这段话改得更口语化，控制在50字内。」',
-        '用「思维链」让 AI 分步推理：在提示词末尾加「请一步步思考」，复杂问题准确率明显提升。',
-        '给 AI 举例子（few-shot）：先给2-3个输入输出范例，它就能模仿你的风格和格式。',
-        '让 AI 自我检查：生成后追加「请检查上文是否有事实错误并修正」，能减少幻觉。'
-      ],
       // ===== 锻炼身体 =====
       stretchGroups: [
         [
@@ -740,7 +723,7 @@
         bodyEl.innerHTML = `
           <div class="block"><div class="block-label">📡 一键查看各平台热点</div>
             <div class="link-grid c2">
-              <a class="link-card" href="https://www.douyin.com/hot" target="_blank" rel="noopener"><div class="lc-icon">🎵</div><div class="lc-name">抖音热榜</div></a>
+              <a class="link-card" href="https://www.douyinjisuban.com/" target="_blank" rel="noopener"><div class="lc-icon">🎵</div><div class="lc-name">抖音极速版</div></a>
               <a class="link-card" href="https://www.xiaohongshu.com/explore" target="_blank" rel="noopener"><div class="lc-icon">📕</div><div class="lc-name">小红书热门</div></a>
               <a class="link-card" href="https://s.weibo.com/top/summary" target="_blank" rel="noopener"><div class="lc-icon">🔴</div><div class="lc-name">微博热搜</div></a>
               <a class="link-card" href="https://www.xiaoyuzhoufm.com/" target="_blank" rel="noopener"><div class="lc-icon">🪐</div><div class="lc-name">小宇宙热门播客</div></a>
@@ -1111,21 +1094,7 @@
         return;
       }
 
-      if (module === 'ai') {
-        const tip = pick(DATA.aiTips);
-        titleEl.textContent = '🤖 AI技巧库';
-        bodyEl.innerHTML = `
-          <div class="block"><div class="block-label">🔗 AI 学习资源（点击直达）</div>
-            <div class="link-grid c2">${DATA.aiLinks.map(l => `<a class="link-card" href="${l.url}" target="_blank" rel="noopener"><div class="lc-icon">${l.icon}</div><div class="lc-name">${l.name}</div></a>`).join('')}</div>
-          </div>
-          <div class="block"><div class="block-label">💡 今日 AI 小技巧</div><div class="tip-box">${tip}</div></div>
-          <div class="block"><div class="block-label">🧰 常用工具</div><div class="desc-text">写作：ChatGPT / Claude · 绘图：Midjourney / SD · 视频：Sora / 可灵 · 配音：ElevenLabs · 翻译：DeepL</div></div>
-          <div class="block"><div class="block-label">⭐ 我的 AI 技巧收藏（自动保存·多端同步）</div>
-            <textarea class="edit-area" data-key="note_ai" placeholder="好用的提示词、工具链接、学习心得，攒成自己的技巧库……"></textarea>
-            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
-          </div>`;
-        return;
-      }
+      /* AI技巧库版块已移除 */
     }
 
     function bindTabs(scope) {
