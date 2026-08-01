@@ -224,7 +224,7 @@
         <button class="nav-item" data-module="english"><span class="nav-ic">🌍</span>英语学习</button>
         <button class="nav-item" data-module="calligraphy"><span class="nav-ic">🖌️</span>书法练习</button>
         <button class="nav-item" data-module="poetry"><span class="nav-ic">🎐</span>诗词赏析</button>
-        <button class="nav-item" data-module="guide"><span class="nav-ic">🧭</span>2026陕西省导游考试</button>
+        <button class="nav-item" data-module="guide"><span class="nav-ic">🧭</span>2026陕西省英语导游考试</button>
         <button class="nav-item" data-module="barista"><span class="nav-ic">☕</span>咖啡师</button>
         <button class="nav-item" data-module="exercise"><span class="nav-ic">💪</span>锻炼身体</button>
         <button class="nav-item" data-module="settings"><span class="nav-ic">⚙️</span>同步设置</button>
@@ -489,7 +489,7 @@
           { name: 'Hacker News', icon: '🧡', url: 'https://news.ycombinator.com' }
         ]
       },
-      // ===== 2026陕西省导游考试 =====
+      // ===== 2026陕西省英语导游考试 =====
       guideExam: [
         { cat:'政策法规·旅行社', q:'旅行社责任保险与旅游意外险的区别', d:'旅行社责任险为强制险，保障旅行社因自身过失对游客造成的损害；还应提示游客自行投保"个人旅游意外险"，保障游客自身意外，二者互补、不可相互替代。', tip:'常考"强制vs自愿""旅行社责任vs游客自身意外"两组对比。' },
         { cat:'政策法规·导游管理', q:'导游证有效期与换发规定', d:'导游证有效期为3年，到期前3个月向原发证机关申请换发；遗失须登报声明作废后申请补发；临时导游证有效期最长3个月且不得延期。', tip:'记数字：有效期3年、提前3个月换发、临时证≤3个月。' },
@@ -799,7 +799,7 @@
       if (module === 'guide') {
         const ex = pick(DATA.guideExam);
         const pr = pick(DATA.guidePractice);
-        titleEl.textContent = '🧭 2026陕西省导游考试';
+        titleEl.textContent = '🧭 2026陕西省英语导游考试';
         bodyEl.innerHTML = `
           <div class="tabs">
             <button class="tab active" data-tab="exam">📘 考试内容</button>
@@ -812,7 +812,7 @@
               <div style="font-size:14px;color:var(--text-light);line-height:1.9;">${ex.d}</div>
             </div>
             <div style="font-size:13px;color:var(--primary-dark);margin-top:10px;line-height:1.7;">💡 记忆要点：${ex.tip}</div>
-            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(ex.q + ' 导游考试')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${ex.q}」讲解视频</a>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(ex.q + ' 英语导游考试')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${ex.q}」讲解视频</a>
           </div>
           <div class="panel" data-panel="practice">
             <div class="block-label">📌 今日一练 · ${pr.cat}</div>
