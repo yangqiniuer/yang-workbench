@@ -409,14 +409,8 @@
         <li class="menu-item" data-module="plan">
           <div class="menu-icon">📋</div><div class="menu-text">每日计划</div><div class="menu-arrow">›</div>
         </li>
-        <li class="menu-item" data-module="hot">
-          <div class="menu-icon">🔥</div><div class="menu-text">爆款热点内容及视频/二创</div><div class="menu-arrow">›</div>
-        </li>
         <li class="menu-item" data-module="inspire">
           <div class="menu-icon">✨</div><div class="menu-text">灵感收集</div><div class="menu-arrow">›</div>
-        </li>
-        <li class="menu-item" data-module="memo">
-          <div class="menu-icon">📝</div><div class="menu-text">备忘录</div><div class="menu-arrow">›</div>
         </li>
         <li class="menu-item" data-module="data">
           <div class="menu-icon">📡</div><div class="menu-text">实时大数据</div><div class="menu-arrow">›</div>
@@ -435,6 +429,12 @@
         </li>
         <li class="menu-item" data-module="poetry">
           <div class="menu-icon">🎐</div><div class="menu-text">诗词赏析</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="guide">
+          <div class="menu-icon">🧭</div><div class="menu-text">2026陕西省导游考试</div><div class="menu-arrow">›</div>
+        </li>
+        <li class="menu-item" data-module="barista">
+          <div class="menu-icon">☕</div><div class="menu-text">咖啡师</div><div class="menu-arrow">›</div>
         </li>
         <li class="menu-item" data-module="exercise">
           <div class="menu-icon">💪</div><div class="menu-text">锻炼身体</div><div class="menu-arrow">›</div>
@@ -703,7 +703,81 @@
           { name: '极客公园', icon: '🚀', url: 'https://www.geekpark.net' },
           { name: 'Hacker News', icon: '🧡', url: 'https://news.ycombinator.com' }
         ]
-      }
+      },
+      // ===== 2026陕西省导游考试 =====
+      guideExam: [
+        { cat:'政策法规·旅行社', q:'旅行社责任保险与旅游意外险的区别', d:'旅行社责任险为强制险，保障旅行社因自身过失对游客造成的损害；还应提示游客自行投保"个人旅游意外险"，保障游客自身意外，二者互补、不可相互替代。', tip:'常考"强制vs自愿""旅行社责任vs游客自身意外"两组对比。' },
+        { cat:'政策法规·导游管理', q:'导游证有效期与换发规定', d:'导游证有效期为3年，到期前3个月向原发证机关申请换发；遗失须登报声明作废后申请补发；临时导游证有效期最长3个月且不得延期。', tip:'记数字：有效期3年、提前3个月换发、临时证≤3个月。' },
+        { cat:'政策法规·旅游安全', q:'旅游安全事故的等级划分', d:'按伤亡与经济损失分四级：轻微、一般、重大、特大。导游遇险应"先抢救游客、保护现场、立即报告"。', tip:'四级顺序与"先救人、再报告、后处理"的处置原则常考。' },
+        { cat:'导游业务·接待流程', q:'地陪导游接站服务的核心步骤', d:'①确认抵达时间与联系司机；②提前30分钟到站并再次核实；③举接站牌迎候；④认找团队、清点人数；⑤集合登车、致欢迎词。', tip:'口诀：核时→到站→举牌→认团→登车。' },
+        { cat:'导游业务·讲解方法', q:'常用的导游讲解方法', d:'有分段讲解、突出重点法、触景生情法、问答法、虚实结合法、画龙点睛法等。陕西景点多用"虚实结合"——以兵马俑实证（实）引出秦统一六国的历史想象（虚）。', tip:'面试讲解最爱考"虚实结合""突出重点"，要结合本省景点举例。' },
+        { cat:'导游业务·危机处理', q:'游客突发疾病的处理', d:'立即报告并联系急救；必要时中断行程送医；保留全部医疗单据；安抚其余游客；由旅行社出具书面证明。不得自行给游客用药。', tip:'关键词：不擅自用药、及时报告、保留凭证。' },
+        { cat:'全国导基·历史', q:'中国主要朝代顺序与陕西的关系', d:'夏商周→秦汉→三国两晋南北朝→隋唐→宋辽金夏→元明清。陕西是周、秦、汉、唐的核心，十三朝古都长安即今西安。', tip:'陕西导游必背：周丰镐、秦咸阳、汉唐长安均在此。' },
+        { cat:'全国导基·宗教', q:'中国佛教四大名山', d:'山西五台山（文殊·智）、浙江普陀山（观音·悲）、四川峨眉山（普贤·行）、安徽九华山（地藏·愿）。陕西虽非四大佛山，却有法门寺这一佛教圣地（佛指舍利）。', tip:'四大佛山与对应菩萨是高频考点；法门寺以"佛指真身舍利"闻名。' },
+        { cat:'全国导基·建筑', q:'中国古代建筑屋顶的等级', d:'等级由高到低：庑殿顶＞歇山顶＞悬山顶＞硬山顶＞攒尖顶；黄色琉璃瓦为皇家专用；斗拱出挑越多等级越高。', tip:'陕西古建筑多歇山/庑殿顶，如西安钟楼为重檐三滴水歇山顶。' },
+        { cat:'地方导基·陕西地理', q:'陕西的"三大地形区"', d:'陕北黄土高原、关中平原（渭河平原）、陕南秦巴山区（含汉中盆地）。"八百里秦川"即指关中平原，北有北山、南有秦岭。', tip:'"三大地形区+渭河"是陕西地理题核心。' },
+        { cat:'地方导基·陕西历史', q:'西安为何称"十三朝古都"', d:'西安（长安）曾为西周、秦、西汉、新、隋、唐等十余个王朝的都城，史称"十三朝古都"；对应都城名有丰镐、咸阳、长安。', tip:'常考具体朝代与对应都城名（丰镐/咸阳/长安）。' },
+        { cat:'面试·景点讲解', q:'兵马俑讲解要点（科目五）', d:'被誉为"世界第八大奇迹"；秦始皇陵陪葬坑；1974年当地农民打井时发现；一号坑步兵方阵、二号坑多兵种、三号坑军幕；陶俑"千人千面"、写实手法。', tip:'面试必考景点之一，准备3分钟中文讲解稿，突出数据与故事性。' },
+        { cat:'面试·景点讲解', q:'大雁塔讲解要点（科目五）', d:'唐永徽三年（652年）玄奘为保存自天竺带回的经卷佛像主持修建；仿印度窣堵坡形制；现存7层；与荐福寺小雁塔并称"西安二塔"。', tip:'关联"玄奘""丝绸之路""大慈恩寺"，易出综合题。' },
+        { cat:'面试·应变', q:'游客要求自由活动时导游的处理', d:'可同意但须：①提醒安全与集合返程时间；②留下酒店地址与联系方式；③告知紧急电话；④不去未开放或危险地区，必要时劝阻。', tip:'原则：可同意、必提醒、要留联、危险须劝阻。' },
+        { cat:'政策法规·合同', q:'包价旅游合同应包含的内容', d:'应包括行程、服务标准、费用、成团最低人数、自由活动时间、违约责任等；旅行社应在签约时如实告知另行付费项目。', tip:'常考"必须载明事项"与"另行付费项目须事先告知"。' },
+        { cat:'全国导基·园林', q:'中国古典园林的分类与特征', d:'皇家园林（北方，规模宏大、气势雄浑，如颐和园）与私家园林（江南，小巧精致、叠山理水，如拙政园）。陕西有华清池这一兼具皇家温泉特色的园林。', tip:'华清宫（华清池）是陕西代表性园林，关联唐玄宗与杨贵妃。' }
+      ],
+      guidePractice: [
+        { cat:'政策法规', q:'根据《旅游法》，旅行社应当与旅游者订立包价旅游合同的时间？', a:'应当在旅游行程开始前与旅游者订立书面包价旅游合同。' },
+        { cat:'导游业务', q:'地陪导游在旅游团到达饭店后，分发房间钥匙前应先做什么？', a:'先与领队、全陪核对接待计划与房间分配名单，确认无误后再分发房卡，并介绍饭店设施与注意事项。' },
+        { cat:'全国导基', q:'"丝绸之路"的东端起点通常被认为是哪座城市？与之相关的陕西标志性遗迹是什么？', a:'东端起点为长安（今西安）；标志性遗迹包括大雁塔（玄奘译经处）、法门寺等，是丝路文化交流的重要见证。' },
+        { cat:'地方导基·陕西', q:'陕西省会是哪座城市？历史上还有哪些著名名称？', a:'省会为西安；历史上称长安、镐京、京兆等，是十三朝古都。' },
+        { cat:'面试·应变', q:'游览中突遇暴雨，团队被困户外，导游应如何处理？', a:'立即组织游客到就近安全建筑避雨；清点人数；联系司机调整行程；安抚情绪；雨后确认安全再继续，必要时变更路线。' },
+        { cat:'政策法规', q:'导游人员擅自增加或者减少旅游项目，可能承担什么责任？', a:'属违约行为，游客可要求旅行社退还费用并赔偿；情节严重的，旅游主管部门可吊销其导游证。' },
+        { cat:'全国导基', q:'中国古代四大发明是什么？其中哪一项与知识传播直接相关？', a:'造纸术、印刷术、火药、指南针；印刷术（含北宋毕昇发明的活字印刷）直接推动了知识的传播与普及。' },
+        { cat:'地方导基·陕西', q:'秦始皇陵及兵马俑坑位于西安哪个区（县）？被誉为什么？', a:'位于西安市临潼区；被誉为"世界第八大奇迹"。' },
+        { cat:'导游业务', q:'导游带团讲解使用"虚实结合法"时应注意什么？', a:'以实景（文物、建筑）为"实"，以传说、历史故事为"虚"；虚要真实有据并服务于实，切忌胡编乱造。' },
+        { cat:'全国导基', q:'道教四大名山是哪几座？陕西是否有代表性道教名山？', a:'湖北武当山、江西龙虎山、四川青城山、安徽齐云山。陕西有终南山（楼观台，道教重要发祥地之一），为重要道教圣地。' },
+        { cat:'政策法规', q:'旅游者在旅游活动中依法享有哪些权利（任答三项）？', a:'①知情权与自主选择权；②受尊重权与公平交易权；③人身、财产安全受保护权；④求偿权与监督权。' },
+        { cat:'面试·讲解', q:'说出华山在陕西的位置及其"五岳"中的称号与特点。', a:'华山位于陕西华阴市，是"五岳"之西岳，以"奇险天下第一山"著称，有长空栈道、鹞子翻身等险道。' },
+        { cat:'地方导基·陕西', q:'法门寺因何闻名于世？唐代地宫出土了哪些重要文物？', a:'以供奉释迦牟尼佛指真身舍利闻名；唐代地宫出土了佛指舍利及大量唐代金银器、秘色瓷等珍贵文物。' },
+        { cat:'导游业务', q:'全陪导游与地陪导游的职责主要区别是什么？', a:'全陪代表组团社全程陪同并统筹联络；地陪代表地接社在本地接待、落实行程；二者配合保障团队顺利运行。' },
+        { cat:'全国导基', q:'中国现存唐以前木结构建筑主要集中在哪个朝代？举一陕西相关例子。', a:'唐代木构保存较多（如山西五台山南禅寺、佛光寺）；陕西有西安大雁塔（砖木混合）、钟楼等，体现了唐代建筑雄浑风格。' },
+        { cat:'政策法规', q:'《旅游安全管理办法》中，旅行社应如何履行安全提示义务？', a:'出团前说明目的地风俗、法律、禁忌与安全事项；行程中持续提示，高风险项目须书面告知并取得游客签字确认。' }
+      ],
+      // ===== 咖啡师 =====
+      baristaExam: [
+        { cat:'咖啡基础', t:'世界三大咖啡品种', d:'阿拉比卡（Arabica，约占六到七成，风味佳、咖啡因较低、宜高海拔）、罗布斯塔（Robusta，苦厚、咖啡因高、抗病强、宜低海拔）、利比里卡（Liberica，产量少、风味独特）。', tip:'常考"阿拉比卡 vs 罗布斯塔"的口感与种植差异。' },
+        { cat:'咖啡基础', t:'咖啡豆其实是种子', d:'咖啡"豆"是咖啡樱桃（浆果）里的种子，通常每颗果实含两粒种子；去除果皮、果肉、果胶、羊皮纸后才是我们见到的生豆。', tip:'加工链路：采摘→去皮→发酵/水洗→干燥→去羊皮纸→生豆。' },
+        { cat:'处理法', t:'三大处理法：水洗、日晒、蜜处理', d:'日晒（自然干燥，果香浓、甜感高）；水洗（水池发酵去果皮，干净明亮、酸质清晰）；蜜处理（留部分果胶干燥，甜感介于两者之间）。', tip:'口诀：日晒甜果香、水洗干净酸、蜜处理均衡甜。' },
+        { cat:'烘焙', t:'烘焙度的判断', d:'浅烘（酸质明亮、保留产地风味）、中烘（酸甜平衡、焦糖化）、深烘（醇苦、巧克力/烟熏、油脂析出）。"一爆"分界浅中、"二爆"分界中深。', tip:'"一爆"结束≈中浅烘，"二爆"开始≈中深烘。' },
+        { cat:'萃取·意式', t:'Espresso 黄金萃取参数', d:'粉量约18g，出液约36g（粉液比约1:2），时间25–30秒，水温90–96℃，压力9 bar。浓度与萃取率需平衡。', tip:'经典"粉液比1:2、25–30秒"是必背数字。' },
+        { cat:'萃取·意式', t:'萃取不足与过度萃取', d:'不足：偏酸、尖利、稀薄（粉粗/时间短/粉少）；过度：偏苦、涩口、焦苦（粉细/时间长/水温高）。调整研磨度是首选手段。', tip:'"先调研磨度，再调其他"是吧台铁律。' },
+        { cat:'奶泡', t:'打发奶泡的关键', d:'先进气（喷嘴贴液面"吱吱"引入空气成绵密泡），后打绵（喷嘴没入深搅打升温至55–65℃停）。全脂奶更易打出稳定微泡。', tip:'温度别超70℃，否则蛋白质变性、甜感尽失。' },
+        { cat:'拉花', t:'拿铁艺术（Latte Art）基础', d:'倒奶时先高位细流注入融合，降至杯面后低位左右摆动并收尾拉出心形/树叶；奶泡要"湿亮微泡"（microfoam），不能有大气泡。', tip:'心形→郁金香→树叶是进阶顺序。' },
+        { cat:'研磨', t:'研磨度与萃取的关系', d:'粉越细接触面积越大、萃取越快（易过萃）；粉越粗萃取越慢（易不足）。意式要细如砂糖，手冲中度，法压粗。', tip:'意式细、手冲中、法压粗——对应不同萃取时间。' },
+        { cat:'水质', t:'水对咖啡风味的影响', d:'一杯咖啡约98%是水。理想水质：TDS 75–150ppm、无氯味、含适量镁钙；硬水易过萃显苦，软水易寡淡。', tip:'"好水出好咖啡"，过滤去氯是第一步。' },
+        { cat:'冲煮·手冲', t:'手冲（Pour-over）要点', d:'水温88–94℃、粉水比1:15–1:16、中细研磨、分段注水、总时长2–3分钟；先用两倍粉量的水"闷蒸"约30秒唤醒咖啡。', tip:'"闷蒸"是手冲灵魂：先润湿排气再正式注水。' },
+        { cat:'设备', t:'意式咖啡机的基本结构原理', d:'由锅炉（产蒸汽与热水）、冲煮头（9 bar萃取）、磨豆机（现磨）组成；每日须反冲冲煮头、清理渣盒、定期除垢。', tip:'"现磨现冲"与"每日清洁"是设备寿命关键。' },
+        { cat:'食品安全', t:'吧台卫生与食品安全', d:'生熟分开、奶制品冷链（2–6℃）、器具每日消毒、手部清洁、过敏原（坚果/乳糖）明示；开封奶建议48小时内用完。', tip:'食品安全是职业咖啡师考试必考项。' },
+        { cat:'服务', t:'顾客服务与吧台礼仪', d:'主动问候、确认订单与偏好（浓度/奶/糖）、制作时专注卫生、出杯报名称、处理投诉先致歉再解决。', tip:'"先共情、后解决"——投诉处理第一步是倾听与致歉。' },
+        { cat:'风味', t:'SCA 风味轮基础', d:'风味按香气、酸质、甜感、醇厚度、余韵等维度描述；常见词：花香、果酸、焦糖甜、坚果、巧克力、烘焙香。用"具体"代替"好喝"。', tip:'描述咖啡用"具体风味词"是专业度的体现。' },
+        { cat:'历史', t:'咖啡的起源传说', d:'最广传"牧羊人卡尔迪"传说：埃塞俄比亚牧羊人发现羊吃红果后异常兴奋，遂发现咖啡；也门苏菲派僧侣用它夜间修行提神，后传向世界。', tip:'埃塞俄比亚是咖啡发源地，也门是早期商业化种植地。' }
+      ],
+      baristaKnowledge: [
+        { cat:'产地', t:'精品咖啡主要产区与风味', d:'埃塞俄比亚（耶加雪菲，柑橘花香）、哥伦比亚（均衡甜）、巴西（坚果巧克力，常作拼配基底）、印尼（曼特宁，草本醇厚）、肯尼亚（莓果明亮酸）。', tip:'记"产区→典型风味"配对，点单推荐时极有用。' },
+        { cat:'冲煮器具', t:'常见家用冲煮方式', d:'手冲（干净、层次分明）、法压壶（醇厚饱满、带细粉）、爱乐压（便捷、可浓可淡）、摩卡壶（炉上煮出意式浓缩感）、虹吸壶（观赏性强、干净）。', tip:'按"想要口感"选器具：要干净选手冲，要醇厚选法压。' },
+        { cat:'奶咖家族', t:'常见意式奶咖的区别', d:'意式浓缩 Espresso、美式（浓缩+水）、拿铁（浓缩+多奶少泡）、卡布（浓缩+等奶等泡）、Flat White（精萃+微泡奶）、馥芮白（更大杯的 Flat White）。', tip:'区别核心在"奶量与奶泡比例"，记一张图就懂。' },
+        { cat:'品鉴', t:'如何在家做简易"杯测"', d:'同粉水比、同温冲多支；先闻干香，注水闷蒸后闻湿香，破渣啜吸（快速吸气让咖啡雾化遍布口腔），记录酸/甜/苦/醇厚度。', tip:'"啜吸"技巧：快速吸气让咖啡雾化，风味更立体。' },
+        { cat:'健康', t:'咖啡因与每日摄入上限', d:'健康成人每日咖啡因建议≤400mg（约3–4杯中杯美式）；孕妇减半；下午晚些时候饮用易影响睡眠。', tip:'一杯中杯美式约150mg，拿铁因奶多反而更低。' },
+        { cat:'存储', t:'咖啡豆如何保鲜', d:'密封、避光、阴凉（15–25℃），勿反复冷冻取出（易结露）；烘焙后4周内喝完最佳；买豆比买粉耐放，现磨现喝。', tip:'"买豆不买粉、现磨现喝"是保鲜第一原则。' },
+        { cat:'拼配与单品', t:'拼配豆 vs 单品豆', d:'单品（单一产地，突出风土个性）；拼配（多产地调配，追求稳定均衡与成本，意式常用）。意式吧台重"稳定"多用拼配，手冲重"个性"多用单品。', tip:'意式重"稳定"→多用拼配；手冲重"个性"→多用单品。' },
+        { cat:'拉花进阶', t:'一杯好拉花的标准', d:'对称、居中、对比清晰；奶咖融合度高（无分层白斑）；图案边缘锐利。前提是 Espresso Crema 完整、奶泡湿亮。', tip:'"融合度"比图案炫技更重要，是基本功。' },
+        { cat:'器具保养', t:'磨豆机的保养', d:'每日清空豆仓、毛刷清粉道；刀盘视用量定期校准或更换；商用机每周至少一次拆洗。磨豆机对风味的影响往往大于咖啡机本身。', tip:'"磨豆机比机器更关键"——粉的均匀度决定萃取。' },
+        { cat:'风味搭配', t:'咖啡与食物搭配', d:'果酸明亮的手冲配水果/轻乳酪；醇厚深烘配巧克力/坚果/焦糖甜点；拿铁配可颂。避免与重辣同食压住风味。', tip:'"风味同向叠加"原则：酸配酸果、苦配甜点。' },
+        { cat:'冷萃', t:'冷萃咖啡（Cold Brew）', d:'粗研磨咖啡加冷水浸泡12–24小时、过滤即得；低酸、顺滑、甜感高，冷藏可保存约1周。与"冰美式"（浓缩+冰水）不同。', tip:'冷萃=冷泡慢萃（低酸）；冰美式=浓缩+冰（保留酸苦）。' },
+        { cat:'文化', t:'全球咖啡文化一瞥', d:'意大利站着喝浓缩；土耳其铜壶煮粉；埃塞俄比亚有现场烘焙研磨的咖啡仪式；美国流行大杯拿铁；北欧浅烘掀起"第三波"精品浪潮。', tip:'"第三波咖啡"强调咖啡如红酒般的风土与工艺。' },
+        { cat:'术语', t:'常见咖啡术语速查', d:'Crema（意式表面金棕油脂层）、Body（醇厚度/口感重量）、Acidity（酸质，非坏酸）、Blind tasting（盲品）、Microfoam（绵密奶泡）。', tip:'听到 Crema 别以为是"油"，它是新鲜萃取的标志。' },
+        { cat:'在家做', t:'新手在家如何起步', d:'先备手冲壶+磨豆机+电子秤；买新鲜单品豆；从1:15粉水比、90℃水温练起；记冲煮日志找偏好。预算有限先投资磨豆机。', tip:'新手三步：好磨豆机→秤→新鲜豆，壶次之。' },
+        { cat:'误区', t:'常见咖啡误区', d:'"深烘更提神"错（深烘咖啡因略低）；"咖啡致骨质疏松"需过量且缺钙才相关；"奶泡越厚越好"错（拿铁要湿泡）。', tip:'提神看咖啡因总量，与烘焙度无简单正相关。' },
+        { cat:'创意', t:'创意咖啡的思路', d:'以基底（浓缩/冷萃）叠加风味：海盐焦糖、橙皮、肉桂、燕麦奶、气泡美式。原则是"衬托而非掩盖"咖啡本味。', tip:'创意咖啡的底线：让咖啡仍是主角。' }
+      ]
     };
 
     function render(module) {
@@ -718,39 +792,12 @@
         return;
       }
 
-      if (module === 'hot') {
-        titleEl.textContent = '🔥 爆款热点内容及视频/二创';
-        bodyEl.innerHTML = `
-          <div class="block"><div class="block-label">📡 一键查看各平台热点</div>
-            <div class="link-grid c2">
-              <a class="link-card" href="https://www.xiaohongshu.com/explore" target="_blank" rel="noopener"><div class="lc-icon">📕</div><div class="lc-name">小红书热门</div></a>
-              <a class="link-card" href="https://s.weibo.com/top/summary" target="_blank" rel="noopener"><div class="lc-icon">🔴</div><div class="lc-name">微博热搜</div></a>
-              <a class="link-card" href="https://www.xiaoyuzhoufm.com/" target="_blank" rel="noopener"><div class="lc-icon">🪐</div><div class="lc-name">小宇宙热门播客</div></a>
-            </div>
-            <div style="font-size:12px;color:var(--text-light);margin-top:8px;">点击直接跳转对应平台热点页（建议在浏览器中打开）。小宇宙首页即热门播客推送，手机上装了 App 会自动唤起。</div>
-          </div>
-          <div class="block"><div class="block-label">✏️ 二创思路</div><div class="tip-box">① 找热点 → ② 提炼情绪共鸣点 → ③ 加上自己的视角/专业 → ④ 30秒内讲清「冲突+反转+价值」。热点要快，但观点要独到。</div></div>
-          <div class="block"><div class="block-label">📥 我的选题 / 二创记录（自动保存·多端同步）</div>
-            <textarea class="edit-area" data-key="note_hot" placeholder="记下今天想追的热点、二创脚本思路、对标账号……"></textarea>
-            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
-          </div>`;
-        return;
-      }
-
       if (module === 'inspire') {
         titleEl.textContent = '✨ 灵感收集';
         const trig = pick(['反差感','日常里的仪式感','一个人也行','原来可以这样','我从X学到的','如果只说一句','被忽略的细节','三个为什么']);
         bodyEl.innerHTML = dailyEditorHTML('inspire', '灵感收集',
           '好点子转瞬即逝，立刻记一句话关键词……',
           '分类建议：选题 / 金句 / 结构 / 标题 / 表现手法。今日触发词：「' + trig + '」—— 围绕它发散 3 个方向。');
-        return;
-      }
-
-      if (module === 'memo') {
-        titleEl.textContent = '📝 备忘录';
-        bodyEl.innerHTML = dailyEditorHTML('memo', '备忘录',
-          '待回消息、待办、灵感碎片、明日重点……',
-          '随手记，每天睡前看一眼；重要的迁移到每日计划。清单：待回消息 / 待办 / 灵感碎片 / 明日重点。');
         return;
       }
 
@@ -961,6 +1008,76 @@
           </div>
           <div class="block" style="margin-top:16px;"><div class="block-label">✅ 我的运动打卡（自动保存·多端同步）</div>
             <textarea class="edit-area" data-key="note_exercise" placeholder="今日完成情况、体感、体重 / 步数、明日计划……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        bindTabs(bodyEl);
+        return;
+      }
+
+      if (module === 'guide') {
+        const ex = pick(DATA.guideExam);
+        const pr = pick(DATA.guidePractice);
+        titleEl.textContent = '🧭 2026陕西省导游考试';
+        bodyEl.innerHTML = `
+          <div class="tabs">
+            <button class="tab active" data-tab="exam">📘 考试内容</button>
+            <button class="tab" data-tab="practice">✍️ 练习</button>
+          </div>
+          <div class="panel active" data-panel="exam">
+            <div class="block-label">📌 今日考点 · ${ex.cat}</div>
+            <div class="scene-card">
+              <div style="font-size:17px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${ex.q}</div>
+              <div style="font-size:14px;color:var(--text-light);line-height:1.9;">${ex.d}</div>
+            </div>
+            <div style="font-size:13px;color:var(--primary-dark);margin-top:10px;line-height:1.7;">💡 记忆要点：${ex.tip}</div>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(ex.q + ' 导游考试')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${ex.q}」讲解视频</a>
+          </div>
+          <div class="panel" data-panel="practice">
+            <div class="block-label">📌 今日一练 · ${pr.cat}</div>
+            <div class="scene-card"><div style="font-size:15px;font-weight:700;line-height:1.8;color:var(--text);">${pr.q}</div></div>
+            <details style="margin-top:10px;border:1px solid var(--glass-border);border-radius:12px;background:var(--glass);padding:10px 12px;">
+              <summary style="cursor:pointer;font-weight:600;color:var(--primary-dark);">💡 显示参考答案</summary>
+              <div style="font-size:14px;color:var(--text-light);line-height:1.9;margin-top:8px;">${pr.a}</div>
+            </details>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.6;">先自己口述或默写一遍，再对照答案，比直接看印象深得多。</div>
+          </div>
+          <div class="block" style="margin-top:16px;"><div class="block-label">📒 我的备考笔记（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_guide" placeholder="今日错题、易混点、背诵计划、景点讲解草稿……"></textarea>
+            <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
+          </div>`;
+        bindTabs(bodyEl);
+        return;
+      }
+
+      if (module === 'barista') {
+        const ex = pick(DATA.baristaExam);
+        const kn = pick(DATA.baristaKnowledge);
+        titleEl.textContent = '☕ 咖啡师';
+        bodyEl.innerHTML = `
+          <div class="tabs">
+            <button class="tab active" data-tab="exam">📘 考试内容</button>
+            <button class="tab" data-tab="knowledge">☕ 咖啡知识点</button>
+          </div>
+          <div class="panel active" data-panel="exam">
+            <div class="block-label">📌 今日考点 · ${ex.cat}</div>
+            <div class="scene-card">
+              <div style="font-size:17px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${ex.t}</div>
+              <div style="font-size:14px;color:var(--text-light);line-height:1.9;">${ex.d}</div>
+            </div>
+            <div style="font-size:13px;color:var(--primary-dark);margin-top:10px;line-height:1.7;">💡 记忆要点：${ex.tip}</div>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(ex.t + ' 咖啡师')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${ex.t}」讲解视频</a>
+          </div>
+          <div class="panel" data-panel="knowledge">
+            <div class="block-label">📌 今日咖啡知识点 · ${kn.cat}</div>
+            <div class="scene-card">
+              <div style="font-size:17px;font-weight:700;margin-bottom:8px;color:var(--primary-dark);">${kn.t}</div>
+              <div style="font-size:14px;color:var(--text-light);line-height:1.9;">${kn.d}</div>
+            </div>
+            <div style="font-size:13px;color:var(--text-light);margin-top:10px;line-height:1.7;">☕ 小拓展：${kn.tip}</div>
+            <a class="video-link" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(kn.t + ' 咖啡')}" target="_blank" rel="noopener"><span class="vl-icon">▶</span> 看「${kn.t}」相关视频</a>
+          </div>
+          <div class="block" style="margin-top:16px;"><div class="block-label">📝 我的咖啡师笔记（自动保存·多端同步）</div>
+            <textarea class="edit-area" data-key="note_barista" placeholder="今日练习心得、配方参数、设备保养、想试的新喝法……"></textarea>
             <div class="edit-hint">输入即自动保存，电脑 / 手机实时同步。</div>
           </div>`;
         bindTabs(bodyEl);
@@ -1368,7 +1485,6 @@
       wireEditors(document.getElementById('sheetBody'));
       if (module === 'plan') wireDaily(document.getElementById('sheetBody'), 'plan');
       if (module === 'inspire') wireDaily(document.getElementById('sheetBody'), 'inspire');
-      if (module === 'memo') wireDaily(document.getElementById('sheetBody'), 'memo');
       sheetOverlay.classList.add('show');
     }
     document.querySelectorAll('.menu-item').forEach(item => {
